@@ -21,6 +21,11 @@ const io = new Server(server, {
     }
 });
 
+// ===============================
+// Online Users
+// ===============================
+const onlineUsers = new Map();
+
 app.use(
     helmet({
         contentSecurityPolicy: false
@@ -67,20 +72,37 @@ app.use("/", authRoutes);
 app.use("/", userRoutes);
 app.use("/", messageRoutes);
 
+
 io.on("connection", (socket) => {
 
     console.log("✅ User Connected:", socket.id);
 
     // attach user later
     socket.on("register", (user) => {
-        socket.user = user;
-        console.log("👤 Registered:", user.username);
-    });
+
+    socket.user = user;
+
+    onlineUsers.set(user.id, socket.id);
+
+    console.log("🟢 Online:", user.full_name);
+
+    io.emit("online_users", Array.from(onlineUsers.keys()));
+
+});
 
     socket.on("disconnect", () => {
-        console.log("❌ User Disconnected:", socket.id);
-    });
 
+    if (socket.user) {
+
+        onlineUsers.delete(socket.user.id);
+
+        console.log("🔴 Offline:", socket.user.full_name);
+
+        io.emit("online_users", Array.from(onlineUsers.keys()));
+
+    }
+
+});
     socket.on("send_message", (data) => {
 
     console.log("📩 Message received:", data);

@@ -171,18 +171,25 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
 
         if (result.success) {
 
-            socket.emit("send_message", {
+    socket.emit("send_message", {
 
-                sender_id: Number(document.body.dataset.userid),
-                receiver_id: selectedUser,
-                message: message,
-                created_at: new Date()
+        sender_id: Number(document.body.dataset.userid),
+        receiver_id: selectedUser,
+        message: message,
+        created_at: new Date()
 
-            });
+    });
 
-            messageBox.value = "";
+    messageBox.value = "";
 
-        }
+    // Reload current conversation
+    const selected = document.querySelector("#employeeList li.selected");
+
+    if (selected) {
+        selectUser(selectedUser, document.getElementById("chatTitle").innerText, selected);
+    }
+
+}
 
     } catch (err) {
         console.error(err);
@@ -249,3 +256,33 @@ loadCurrentUser();
 loadEmployees();
 
 console.log("✅ Socket connected");
+
+document.getElementById("messageBox").addEventListener("keypress", function(e){
+
+    if(e.key === "Enter"){
+
+        e.preventDefault();
+
+        document.getElementById("sendBtn").click();
+
+    }
+
+});
+// ===============================
+// Employee Search
+// ===============================
+document.getElementById("searchInput").addEventListener("keyup", function () {
+
+    const value = this.value.toLowerCase();
+
+    document.querySelectorAll("#employeeList li").forEach(li => {
+
+        if (li.innerText.toLowerCase().includes(value)) {
+            li.style.display = "";
+        } else {
+            li.style.display = "none";
+        }
+
+    });
+
+});
