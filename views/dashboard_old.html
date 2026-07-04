@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OfficeChat Pro</title>
+
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+        <div class="logo">
+            OfficeChat
+        </div>
+
+        <div class="menu">
+
+            <button class="menu-btn active">
+                💬 Chats
+            </button>
+
+            <button class="menu-btn">
+                👥 Employees
+            </button>
+
+            <button class="menu-btn">
+                ⚙ Settings
+            </button>
+
+        </div>
+
+        <div class="logout">
+            <button id="logoutBtn">
+                Logout
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Employee List -->
+
+    <div class="users-panel">
+
+        <div class="search">
+
+            <input
+                type="text"
+                id="searchUser"
+                placeholder="Search employee...">
+
+        </div>
+
+        <div id="userList" class="user-list">
+
+            <!-- Users will load here -->
+
+        </div>
+
+    </div>
+
+    <!-- Chat Area -->
+
+    <div class="chat-panel">
+
+        <div class="chat-header">
+
+            <div class="chat-user">
+
+                <div class="avatar">
+                    P
+                </div>
+
+                <div>
+
+                    <h3 id="chatName">
+                        Select User
+                    </h3>
+
+                    <small id="userStatus">
+                        Offline
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div id="messages" class="messages">
+
+            <div class="welcome">
+
+                <h2>
+                    Welcome to OfficeChat Pro
+                </h2>
+
+                <p>
+                    Select an employee to begin chatting.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="chat-input">
+
+            <button id="emojiBtn">
+                😊
+            </button>
+
+            <button id="attachBtn">
+                📎
+            </button>
+
+            <input
+                type="text"
+                id="messageInput"
+                placeholder="Type a message...">
+
+            <button id="sendBtn">
+                Send
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/dashboard.js"></script>
+
+</body>
+</html>

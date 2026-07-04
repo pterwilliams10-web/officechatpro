@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>OfficeChat Pro - Admin Panel</title>
+
+<link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body{
+    background:#f5f5f5;
+}
+
+.container-box{
+    max-width:900px;
+    margin:auto;
+    margin-top:40px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container-box">
+
+<div class="card shadow">
+
+<div class="card-header bg-primary text-white">
+
+<h3>OfficeChat Pro - Admin Panel</h3>
+
+</div>
+
+<div class="card-body">
+
+<form id="createUserForm">
+
+<div class="mb-3">
+<label>Full Name</label>
+<input
+type="text"
+class="form-control"
+id="full_name"
+required>
+</div>
+
+<div class="mb-3">
+<label>Username</label>
+<input
+type="text"
+class="form-control"
+id="username"
+required>
+</div>
+
+<div class="mb-3">
+<label>Password</label>
+<input
+type="password"
+class="form-control"
+id="password"
+required>
+</div>
+
+<div class="mb-3">
+
+<label>Role</label>
+
+<select
+id="role"
+class="form-control">
+
+<option>Employee</option>
+<option>Admin</option>
+
+</select>
+
+</div>
+
+<button
+class="btn btn-success w-100"
+type="submit">
+
+Create User
+
+</button>
+
+</form>
+
+<hr>
+
+<div id="message"></div>
+
+<hr>
+
+<h4>Existing Users</h4>
+
+<table class="table table-bordered table-striped">
+
+<thead class="table-dark">
+
+<tr>
+
+<th>Full Name</th>
+<th>Username</th>
+<th>Role</th>
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="usersTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="/js/admin.js"></script>
+
+</body>
+
+</html>

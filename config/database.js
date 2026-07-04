@@ -1,0 +1,87 @@
+const Database = require("better-sqlite3");
+const bcrypt = require("bcrypt");
+const path = require("path");
+const fs = require("fs");
+
+// Database folder
+const databaseFolder = path.join(__dirname, "..", "database");
+
+// Create folder if it doesn't exist
+if (!fs.existsSync(databaseFolder)) {
+    fs.mkdirSync(databaseFolder, { recursive: true });
+}
+
+// Database file
+const dbPath = path.join(databaseFolder, "officechat.db");
+
+// Open database
+const db = new Database(dbPath);
+
+// ============================
+// USERS TABLE
+// ============================
+
+db.prepare(`
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    full_name TEXT NOT NULL,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL,
+    active INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+`).run();
+
+// ============================
+// MESSAGES TABLE
+// ============================
+
+db.prepare(`
+CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    sender_id INTEGER NOT NULL,
+
+    receiver_id INTEGER NOT NULL,
+
+    message TEXT NOT NULL,
+
+    is_read INTEGER DEFAULT 0,
+
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY(sender_id) REFERENCES users(id),
+
+    FOREIGN KEY(receiver_id) REFERENCES users(id)
+)
+`).run();
+
+// ============================
+// CREATE DEFAULT ADMIN
+// ============================
+
+const admin = db.prepare(
+    "SELECT * FROM users WHERE username = ?"
+).get("admin");
+
+if (!admin) {
+
+    const hash = bcrypt.hashSync("admin123", 10);
+
+    db.prepare(`
+        INSERT INTO users
+        (full_name, username, password, role)
+        VALUES (?, ?, ?, ?)
+    `).run(
+        "System Administrator",
+        "admin",
+        hash,
+        "Admin"
+    );
+
+    console.log("✅ Default Admin Created");
+
+}
+
+module.exports = db;
