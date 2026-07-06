@@ -11,29 +11,48 @@ exports.sendMessage = (req, res) => {
     }
 
     const sender_id = req.session.user.id;
-    const { receiver_id, message } = req.body;
+    const {
+    receiver_id,
+    message,
+    file_name,
+    file_path,
+    file_type
+} = req.body;
 
-    if (!receiver_id || !message) {
-        return res.json({
-            success: false,
-            message: "Receiver and message are required."
-        });
-    }
+   if (!receiver_id) {
+    return res.json({
+        success: false,
+        message: "Receiver is required."
+    });
+}
+
+if (!message && !file_path) {
+    return res.json({
+        success: false,
+        message: "Message or file is required."
+    });
+}
 
     db.prepare(`
-        INSERT INTO messages
-        (
-            sender_id,
-            receiver_id,
-            message
-        )
-        VALUES
-        (?, ?, ?)
-    `).run(
-        sender_id,
-        receiver_id,
-        message
-    );
+INSERT INTO messages
+(
+    sender_id,
+    receiver_id,
+    message,
+    file_name,
+    file_path,
+    file_type
+)
+VALUES
+(?, ?, ?, ?, ?, ?)
+`).run(
+    sender_id,
+    receiver_id,
+    message || null,
+    file_name || null,
+    file_path || null,
+    file_type || null
+);
 
     res.json({
         success: true,

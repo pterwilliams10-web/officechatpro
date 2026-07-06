@@ -6,139 +6,186 @@
     <title>OfficeChat Pro</title>
 
     <link rel="stylesheet" href="/css/dashboard.css">
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <div class="app">
-
     <!-- Sidebar -->
     <aside class="sidebar">
-
         <div class="logo">
             <h2>OfficeChat</h2>
             <span>PRO</span>
         </div>
 
+        <!-- FIXED: Single set of Navigation Buttons -->
         <nav class="nav-menu">
-
-            <button class="nav-item active">
+            <button id="navChats" class="nav-item active" onclick="switchTab('chats')">
                 💬 Chats
             </button>
 
-            <button class="nav-item">
+            <button id="navEmployees" class="nav-item" onclick="switchTab('employees')">
                 👥 Employees
             </button>
 
-            <button class="nav-item">
+            <button id="adminNavBtn" class="nav-item" style="display:none;" onclick="toggleAdminPanel(true)">
+    🛠️ Admin Controls
+</button>
+
+            <button id="navSettings" class="nav-item" onclick="switchTab('settings')">
                 ⚙ Settings
             </button>
-
         </nav>
 
         <div class="sidebar-footer">
-
             <div id="userinfo" class="user-info">
                 Loading...
             </div>
-
             <button id="logoutBtn" class="logout-btn">
                 Logout
             </button>
-
         </div>
-
     </aside>
 
     <!-- Employee Panel -->
-
     <section class="employee-panel">
-
         <div class="panel-header">
-
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search employee..."
-            >
-
+            <input type="text" id="searchInput" placeholder="Search employee...">
         </div>
 
-        <ul id="employeeList" class="employee-list">
-
-            <!-- Dynamic users here -->
-
+        <!-- Global Broadcast Button -->
+        <ul class="employee-list" style="border-bottom: 2px dashed #e5e7eb; margin-bottom: 5px; flex: none;" id="broadcastTab">
+            <li class="list-group-item" onclick="selectBroadcastMode(this)">
+                📢 <strong>Broadcast Announcement</strong>
+            </li>
         </ul>
 
+        <ul id="employeeList" class="employee-list">
+            <!-- Dynamic users here -->
+        </ul>
     </section>
 
     <!-- Chat Area -->
-
     <main class="chat-area">
-
         <div class="chat-header">
-
             <div class="chat-user">
-
-                <div class="avatar">
-                    👤
-                </div>
-
+                <div class="avatar">👤</div>
                 <div>
-
-                    <h3 id="chatTitle">
-                        Select Employee
-                    </h3>
-
-                    <small id="userStatus">
-                        Offline
-                    </small>
-
+                    <h3 id="chatTitle">Select Employee</h3>
+                    <small id="userStatus">Offline</small>
                 </div>
-
             </div>
-
         </div>
 
         <div id="chatMessages" class="chat-messages">
-
             <div class="welcome-screen">
-
                 <h2>Welcome to OfficeChat Pro</h2>
-
-                <p>
-                    Select an employee from the list to start chatting.
-                </p>
-
+                <p>Select an employee from the list to start chatting.</p>
             </div>
-
         </div>
 
+        
         <div class="chat-input-area">
+            <button class="tool-btn">😊</button>
 
-            <button class="tool-btn">
-                😊
-            </button>
-
-            <button class="tool-btn">
-                📎
-            </button>
+            <!-- FIXED: Hidden file input and working Paperclip -->
 
             <input
-                type="text"
-                id="messageBox"
-                placeholder="Type a message..."
-            >
+    type="file"
+    id="fileAttachmentInput"
+    style="display:none"
+    onchange="handleFileSelected(this)">
+            <input type="file" id="fileAttachmentInput" style="display: none;" onchange="handleFileSelected(this)">
+            <button class="tool-btn" onclick="triggerFileUpload()">📎</button>
 
-            <button id="sendBtn" class="send-btn">
-                Send
-            </button>
+
+            <input type="text" id="messageBox" placeholder="Type a message...">
+            <button id="sendBtn" class="send-btn">Send</button>
+        </div>
+    </main>
+</div>
+
+
+<!-- Admin Management Panel Overlay -->
+<div id="adminPanelModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; justify-content: center; align-items: center;">
+    <div style="background: white; width: 500px; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-height: 85vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #edf2f7; padding-bottom: 10px;">
+            <h2 style="color: #1e293b;">🛠️ System Admin Controls</h2>
+            <button onclick="toggleAdminPanel(false)" style="background: none; border: none; font-size: 20px; cursor: pointer;">❌</button>
+        </div>
+
+        <!-- Section 1: Add User (MATCHES 111_3.PNG) -->
+        <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #edf2f7;">
+            <h3 style="font-size: 16px; margin-bottom: 10px; color: #2563eb;">➕ Add New Employee</h3>
+            <input type="text" id="adminAddName" placeholder="Full Name" style="width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+            <!-- ADDED USERNAME FIELD -->
+            <input type="text" id="adminAddUsername" placeholder="Username" style="width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+            <input type="password" id="adminAddPassword" placeholder="Password" style="width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+            <input type="text" id="adminAddRole" placeholder="Role (e.g., Employee, admin)" value="Employee" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #d1d5db; border-radius: 6px;">
+            <button onclick="adminAddUser()" style="width: 100%; padding: 10px; background: #198754; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Create User</button>
+        </div>
+
+        <!-- ===========================
+     Employee Management
+=========================== -->
+
+<div class="card mt-4" id="employeeManagementCard">
+
+    <div class="card-header bg-dark text-white">
+        👥 Employee Management
+    </div>
+
+    <div class="card-body">
+
+        <input
+            type="text"
+            id="employeeSearch"
+            class="form-control mb-3"
+            placeholder="Search employee...">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th width="180">Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="employeeManagementTable">
+
+                </tbody>
+
+            </table>
 
         </div>
 
-    </main>
+    </div>
 
+</div>
+        <!-- Section 2: Manage Existing Users (For Password updates) -->
+        <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #edf2f7;">
+            <h3 style="font-size: 16px; margin-bottom: 10px; color: #475569;">🔑 Update Password</h3>
+            <input type="text" id="adminTargetUsername" placeholder="Target Username" style="width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+            <input type="password" id="adminNewPassword" placeholder="New Password" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #d1d5db; border-radius: 6px;">
+            <button onclick="adminChangePassword()" style="width: 100%; padding: 10px; background: #475569; color: white; border: none; border-radius: 6px; cursor: pointer;">Update Password</button>
+        </div>
+
+        <!-- Section 3: Delete User -->
+        <div>
+            <h3 style="font-size: 16px; margin-bottom: 10px; color: #dc2626;">🚨 Remove User</h3>
+            <input type="text" id="adminDeleteUsername" placeholder="Username to Delete" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #d1d5db; border-radius: 6px;">
+            <button onclick="adminRemoveUser()" style="width: 100%; padding: 10px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Delete Account</button>
+        </div>
+    </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>

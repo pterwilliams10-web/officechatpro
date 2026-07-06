@@ -46,6 +46,7 @@ app.use(session({
 }));
 
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(
     "/bootstrap",
@@ -67,10 +68,12 @@ app.get("/admin", (req, res) => {
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const messageRoutes = require("./routes/messages");
+const uploadRoutes = require("./routes/uploadRoutes");
 
 app.use("/", authRoutes);
 app.use("/", userRoutes);
 app.use("/", messageRoutes);
+app.use("/upload", uploadRoutes);
 
 
 io.on("connection", (socket) => {
