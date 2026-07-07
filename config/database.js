@@ -1,21 +1,15 @@
 const Database = require("better-sqlite3");
 const bcrypt = require("bcrypt");
 const path = require("path");
-const fs = require("fs");
 
-// Database folder
-const databaseFolder = path.join(__dirname, "..", "database");
+const databaseFolder = path.join(__dirname, "..");
 
-// Create folder if it doesn't exist
-if (!fs.existsSync(databaseFolder)) {
-    fs.mkdirSync(databaseFolder, { recursive: true });
-}
-
-// Database file
 const dbPath = path.join(databaseFolder, "officechat.db");
 
-// Open database
 const db = new Database(dbPath);
+
+console.log("SQLite database connected");
+
 
 // ============================
 // USERS TABLE
@@ -32,6 +26,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 )
 `).run();
+
 
 // ============================
 // MESSAGES TABLE
@@ -65,17 +60,19 @@ CREATE TABLE IF NOT EXISTS messages (
 )
 `).run();
 
+
 // ============================
 // ANNOUNCEMENTS TABLE
 // ============================
 
 db.prepare(`
 CREATE TABLE IF NOT EXISTS announcements (
+
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 
     title TEXT NOT NULL,
 
-    message TEXT ,
+    message TEXT,
 
     created_by INTEGER NOT NULL,
 
@@ -84,8 +81,11 @@ CREATE TABLE IF NOT EXISTS announcements (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY(created_by) REFERENCES users(id)
+
 )
 `).run();
+
+
 // ============================
 // CREATE DEFAULT ADMIN
 // ============================
@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS announcements (
 const admin = db.prepare(
     "SELECT * FROM users WHERE username = ?"
 ).get("admin");
+
 
 if (!admin) {
 
@@ -112,5 +113,6 @@ if (!admin) {
     console.log("✅ Default Admin Created");
 
 }
+
 
 module.exports = db;
