@@ -69,11 +69,13 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const messageRoutes = require("./routes/messages");
 const uploadRoutes = require("./routes/uploadRoutes");
+const broadcastRoutes = require("./routes/broadcasts");
 
 app.use("/", authRoutes);
 app.use("/", userRoutes);
 app.use("/", messageRoutes);
 app.use("/upload", uploadRoutes);
+app.use("/", broadcastRoutes);
 
 
 io.on("connection", (socket) => {
@@ -112,6 +114,17 @@ io.on("connection", (socket) => {
 
     // broadcast to all users
     socket.broadcast.emit("receive_message", data);
+
+});
+
+// ===============================
+// Broadcast Message
+// ===============================
+socket.on("broadcast_message", (data) => {
+
+    console.log("📢 Broadcast:", data);
+
+    io.emit("receive_broadcast", data);
 
 });
 });

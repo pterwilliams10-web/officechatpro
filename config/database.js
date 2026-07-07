@@ -115,4 +115,20 @@ if (!admin) {
 }
 
 
+
+// ============================
+// BROADCASTS TABLE
+// ============================
+
+db.prepare(`
+CREATE TABLE IF NOT EXISTS broadcasts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sender_id INTEGER NOT NULL,
+    sender_name TEXT NOT NULL,
+    message TEXT NOT NULL,
+    is_pinned INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+`).run();
+
 module.exports = db;

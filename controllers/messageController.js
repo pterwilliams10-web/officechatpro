@@ -61,6 +61,8 @@ VALUES
 
 };
 
+
+
 // Load Conversation
 exports.getConversation = (req, res) => {
 
@@ -92,6 +94,31 @@ exports.getConversation = (req, res) => {
     res.json({
         success: true,
         messages
+    });
+
+};
+
+exports.markAsRead = (req, res) => {
+
+    if (!req.session.user) {
+        return res.status(401).json({
+            success: false
+        });
+    }
+
+    const senderId = req.params.id;
+    const receiverId = req.session.user.id;
+
+    db.prepare(`
+        UPDATE messages
+        SET is_read = 1
+        WHERE sender_id = ?
+        AND receiver_id = ?
+        AND is_read = 0
+    `).run(senderId, receiverId);
+
+    res.json({
+        success: true
     });
 
 };
