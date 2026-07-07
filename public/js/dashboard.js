@@ -128,6 +128,10 @@ async function selectUser(id, name, element) {
         const response = await fetch("/messages/" + id);
         const result = await response.json();
 
+        await fetch("/messages/read/" + id, {
+    method: "PUT"
+});
+
         let html = "";
 
         if (result.messages.length === 0) {
@@ -198,27 +202,39 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
 
 
     // --- HANDLE GLOBAL BROADCAST ---
-    if (isBroadcastMode) {
-        socket.emit("broadcast_message", {
-            sender_name: currentUserName,
-            message: message,
-            created_at: new Date()
-        });
-        
-        // Render instantly inside the sender's own UI
-        const chatBox = document.getElementById("chatMessages");
-        chatBox.innerHTML += `
-            <div class="message me">
-                <div class="bubble" style="background: #2563eb;">
-                    <div class="text"><strong>[Broadcast by You]</strong> ${message}</div>
-                    <div class="meta">${new Date().toLocaleTimeString()}</div>
-                </div>
-            </div>
-        `;
-        messageBox.value = "";
-        chatBox.scrollTop = chatBox.scrollHeight;
+  if (isBroadcastMode) {
+
+    // Save broadcast in SQLite
+    const response = await fetch("/broadcasts/send", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message: message
+        })
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+        alert(result.message);
         return;
     }
+
+    // Send instantly to everyone
+    socket.emit("broadcast_message", {
+        sender_name: currentUserName,
+        message: message,
+        created_at: new Date()
+    });
+
+    messageBox.value = "";
+
+    loadBroadcasts();
+
+    return;
+}
 
     // --- EXISTING DIRECT MESSAGE LOGIC ---
     try {
@@ -262,6 +278,17 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
 // Receive Individual Message
 // ===============================
 socket.on("receive_message", (data) => {
+
+    // Browser Notification
+    if (
+        Notification.permission === "granted" &&
+        document.hidden
+    ) {
+        new Notification("OfficeChat Pro", {
+            body: data.message || "📎 File received"
+        });
+    }
+
     if (!selectedUser) return;
 
     const currentUser = Number(document.body.dataset.userid);
@@ -280,8 +307,21 @@ socket.on("receive_message", (data) => {
         <div class="message ${mine ? "me" : "other"}">
             <div class="bubble">
                 <div class="text">
-                    ${data.message}
-                </div>
+
+    ${data.message || ""}
+
+    ${
+        data.file_path
+            ? `
+                <br><br>
+                📎 <a href="${data.file_path}" target="_blank">
+                    ${data.file_name}
+                </a>
+              `
+            : ""
+    }
+
+</div>
                 <div class="meta">
                     ${new Date(data.created_at || Date.now()).toLocaleTimeString()}
                 </div>
@@ -316,34 +356,78 @@ socket.on("receive_broadcast", (data) => {
 
 async function handleFileSelected(input) {
 
+    if (!selectedUser) {
+        alert("Please select an employee first.");
+        input.value = "";
+        return;
+    }
+
     const file = input.files[0];
 
     if (!file) return;
 
     const formData = new FormData();
-
     formData.append("file", file);
 
     try {
 
-        const response = await fetch("/upload", {
+        // Upload the file
+        const uploadResponse = await fetch("/upload", {
             method: "POST",
             body: formData
         });
 
-        const result = await response.json();
+        const uploadResult = await uploadResponse.json();
 
-        console.log(result);
+        if (!uploadResult.success) {
+            alert(uploadResult.message);
+            return;
+        }
 
-        if (result.success) {
+        // Send the uploaded file as a chat message
+        const messageResponse = await fetch("/messages/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                receiver_id: selectedUser,
+                message: "",
+                file_name: uploadResult.file.originalName,
+                file_path: uploadResult.file.path,
+                file_type: uploadResult.file.mimetype
+            })
+        });
 
-            alert("✅ File uploaded successfully!");
+        const messageResult = await messageResponse.json();
 
-            console.log(result.file);
+        if (messageResult.success) {
+
+            socket.emit("send_message", {
+                sender_id: Number(document.body.dataset.userid),
+                receiver_id: selectedUser,
+                message: "",
+                file_name: uploadResult.file.originalName,
+                file_path: uploadResult.file.path,
+                file_type: uploadResult.file.mimetype,
+                created_at: new Date()
+            });
+
+            const selected = document.querySelector("#employeeList li.selected");
+
+            if (selected) {
+                selectUser(
+                    selectedUser,
+                    document.getElementById("chatTitle").innerText,
+                    selected
+                );
+            }
+
+            input.value = "";
 
         } else {
 
-            alert(result.message);
+            alert(messageResult.message);
 
         }
 
@@ -366,21 +450,65 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
     window.location = "/";
 });
 
+async function loadBroadcasts() {
+
+    try {
+
+        const response = await fetch("/broadcasts");
+
+        const result = await response.json();
+
+        if (!result.success) return;
+
+        const chatBox = document.getElementById("chatMessages");
+
+        chatBox.innerHTML = "";
+
+        result.broadcasts.forEach(item => {
+
+            chatBox.innerHTML += `
+                <div class="message other" style="justify-content:center;width:100%;">
+                    <div class="bubble" style="background:#eff6ff;color:#1e40af;max-width:90%;">
+                        <div class="text">
+                            📢 <strong>${item.sender_name}</strong><br>
+                            ${item.message}
+                        </div>
+                        <div class="meta">
+                            ${item.created_at}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        });
+
+    } catch(err){
+
+        console.error(err);
+
+    }
+
+}
+
+// ===============================
+// Start App
+// ===============================
 // ===============================
 // Start App
 // ===============================
 loadCurrentUser();
 loadEmployees();
 loadEmployeeManagement();
+loadBroadcasts();
 
 console.log("✅ Socket connected");
 
-document.getElementById("messageBox").addEventListener("keypress", function(e){
-    if(e.key === "Enter"){
-        e.preventDefault();
-        document.getElementById("sendBtn").click();
-    }
-});
+// ===============================
+// Browser Notification Permission
+// ===============================
+if ("Notification" in window) {
+    Notification.requestPermission();
+}
 
 // ===============================
 // Employee Search
