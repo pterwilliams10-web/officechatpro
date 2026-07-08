@@ -205,7 +205,7 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
   if (isBroadcastMode) {
 
     // Save broadcast in SQLite
-    const response = await fetch("/broadcasts/send", {
+    const response = await fetch("/broadcast/send", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -454,7 +454,7 @@ async function loadBroadcasts() {
 
     try {
 
-        const response = await fetch("/broadcasts");
+        const response = await fetch("/broadcast/history");
 
         const result = await response.json();
 
@@ -500,6 +500,7 @@ loadCurrentUser();
 loadEmployees();
 loadEmployeeManagement();
 loadBroadcasts();
+loadBroadcastHistory();
 
 console.log("✅ Socket connected");
 
@@ -529,7 +530,34 @@ document.getElementById("searchInput").addEventListener("keyup", function () {
 // Admin Modal Controllers
 // ===============================
 function toggleAdminPanel(show) {
-    document.getElementById("adminPanelModal").style.display = show ? "flex" : "none";
+
+    document.getElementById("adminPanelModal").style.display =
+        show ? "flex" : "none";
+
+    if (show) {
+        loadEmployeeManagement();
+        loadMessageHistory();
+        loadGroupMembers();
+        loadGroups();
+    }
+
+}
+
+function filterHistory() {
+
+    const search = document.getElementById("historySearch");
+
+    if (!search) return;
+
+    const value = search.value.toLowerCase();
+
+    document.querySelectorAll("#historyTable tr")
+        .forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(value)
+                ? ""
+                : "none";
+        });
+
 }
 
 // 1. Add User Account
@@ -797,6 +825,475 @@ async function deleteEmployee(id) {
         console.error(err);
 
         alert("Unable to connect to server.");
+
+    }
+
+}
+
+async function loadMessageHistory() {
+
+    const response = await fetch("/history");
+
+    const result = await response.json();
+
+    if (!result.success) return;
+
+    let html = "";
+
+    result.messages.forEach(msg => {
+
+        html += `
+            <div class="card mb-2">
+
+                <div class="card-body">
+
+                    <strong>${msg.sender_name}</strong>
+
+                    ➜
+
+                    <strong>${msg.receiver_name}</strong>
+
+                    <br><br>
+
+                    ${msg.message || ""}
+
+                    ${
+                        msg.file_path
+                        ? `<br><a href="${msg.file_path}" target="_blank">📎 ${msg.file_name}</a>`
+                        : ""
+                    }
+
+                    <hr>
+
+                    <small>${msg.created_at}</small>
+
+                </div>
+
+            </div>
+        `;
+
+    });
+
+    document.getElementById("messageHistory").innerHTML = html;
+
+}
+// ======================================
+// Load Admin Message History
+// ======================================
+
+async function loadMessageHistory() {
+
+    try {
+
+        const response = await fetch("/history");
+
+        const result = await response.json();
+
+        if (!result.success) return;
+
+        const table = document.getElementById("historyTable");
+
+        table.innerHTML = "";
+
+        result.messages.forEach(msg => {
+
+table.innerHTML += `
+<tr>
+
+    <td>${msg.created_at}</td>
+
+    <td>${msg.sender_name}</td>
+
+    <td>${msg.receiver_name}</td>
+
+    <td>${msg.message || ""}</td>
+
+    <td>
+
+        <button
+            class="btn btn-sm btn-primary"
+            onclick="viewConversation(${msg.sender_id}, ${msg.receiver_id})">
+
+            Open
+
+        </button>
+
+    </td>
+
+</tr>
+`;
+
+        });
+
+    }
+
+    catch(err){
+
+        console.error(err);
+
+    }
+
+}
+
+async function viewConversation(senderId, receiverId) {
+
+    try {
+
+        const response = await fetch(
+            `/history/conversation/${senderId}/${receiverId}`
+        );
+
+        const result = await response.json();
+
+        if (!result.success) {
+            alert(result.message || "Unable to load conversation.");
+            return;
+        }
+
+        const title = document.getElementById("adminConversationTitle");
+        const box = document.getElementById("adminConversationMessages");
+
+        if (!title || !box) return;
+
+        if (result.messages.length === 0) {
+            title.innerText = "Conversation";
+            box.innerHTML = "No messages found for this conversation.";
+            return;
+        }
+
+        const first = result.messages[0];
+
+        title.innerText = `${first.sender_name} and ${first.receiver_name}`;
+
+        box.innerHTML = "";
+
+        result.messages.forEach(msg => {
+
+            box.innerHTML += `
+                <div style="border-bottom:1px solid #e5e7eb;padding:8px 0;">
+                    <div style="font-weight:600;color:#1e293b;">
+                        ${msg.sender_name} to ${msg.receiver_name}
+                    </div>
+                    <div style="margin:4px 0;">
+                        ${msg.message || ""}
+                        ${
+                            msg.file_path
+                                ? `<br><a href="${msg.file_path}" target="_blank">${msg.file_name}</a>`
+                                : ""
+                        }
+                    </div>
+                    <small style="color:#64748b;">${msg.created_at}</small>
+                </div>
+            `;
+
+        });
+
+        box.scrollTop = 0;
+
+    } catch (err) {
+
+        console.error(err);
+        alert("Unable to load conversation.");
+
+    }
+
+}
+
+async function loadGroupMembers() {
+
+    try {
+
+        const response = await fetch("/users/all");
+        const users = await response.json();
+        const list = document.getElementById("groupMemberList");
+
+        if (!list || !Array.isArray(users)) return;
+
+        list.innerHTML = "";
+
+        users.forEach(user => {
+            list.innerHTML += `
+                <label style="display:block;margin-bottom:6px;">
+                    <input type="checkbox" class="group-member-checkbox" value="${user.id}">
+                    ${user.full_name} (${user.role})
+                </label>
+            `;
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+
+async function createGroup() {
+
+    const nameInput = document.getElementById("groupName");
+    const name = nameInput.value.trim();
+    const memberIds = Array
+        .from(document.querySelectorAll(".group-member-checkbox:checked"))
+        .map(input => Number(input.value));
+
+    if (!name) {
+        alert("Please enter a group name.");
+        return;
+    }
+
+    if (memberIds.length === 0) {
+        alert("Please select at least one group member.");
+        return;
+    }
+
+    try {
+
+        const response = await fetch("/groups", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name,
+                member_ids: memberIds
+            })
+        });
+
+        const result = await response.json();
+
+        alert(result.message);
+
+        if (result.success) {
+            nameInput.value = "";
+            document
+                .querySelectorAll(".group-member-checkbox")
+                .forEach(input => {
+                    input.checked = false;
+                });
+            loadGroups();
+        }
+
+    } catch (err) {
+
+        console.error(err);
+        alert("Unable to create group.");
+
+    }
+
+}
+
+async function loadGroups() {
+
+    try {
+
+        const response = await fetch("/groups");
+        const result = await response.json();
+        const list = document.getElementById("groupList");
+
+        if (!list || !result.success) return;
+
+        list.innerHTML = "";
+
+        if (result.groups.length === 0) {
+            list.innerHTML = "No groups created yet.";
+            return;
+        }
+
+        result.groups.forEach(group => {
+            list.innerHTML += `
+                <div style="border-bottom:1px solid #e5e7eb;padding:8px 0;">
+                    <strong>${group.name}</strong>
+                    <div style="font-size:13px;color:#475569;">
+                        ${group.member_count} members
+                    </div>
+                    <div style="font-size:12px;color:#64748b;">
+                        ${group.members || "No members"}
+                    </div>
+                </div>
+            `;
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+
+// =======================================
+// Send Broadcast
+// =======================================
+
+async function sendBroadcast() {
+
+    const message = document
+        .getElementById("broadcastMessage")
+        .value
+        .trim();
+
+    if (!message) {
+        alert("Please enter a broadcast message.");
+        return;
+    }
+
+    try {
+
+        const response = await fetch("/broadcast/send", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                message: message
+            })
+
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+
+            document.getElementById("broadcastMessage").value = "";
+
+            loadBroadcastHistory();
+
+        } else {
+
+            alert(result.message);
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Unable to send broadcast.");
+
+    }
+
+}
+
+// =======================================
+// Load Broadcast History
+// =======================================
+
+async function loadBroadcastHistory() {
+
+    try {
+
+        const response = await fetch("/broadcast/history");
+
+        const result = await response.json();
+
+const broadcasts = result.broadcasts;
+
+        const history = document.getElementById("broadcastHistory");
+
+        history.innerHTML = "";
+
+        if (broadcasts.length === 0) {
+
+            history.innerHTML = `
+                <div class="text-center text-muted">
+                    No broadcasts found.
+                </div>
+            `;
+
+            return;
+        }
+
+        broadcasts.forEach(item => {
+
+            history.innerHTML += `
+
+                <div class="card mb-2">
+
+                    <div class="card-body">
+
+                        <h6 class="card-title">
+                            📢 ${item.sender_name}
+                        </h6>
+
+                        <p class="card-text">
+                            ${item.message}
+                        </p>
+
+                        <small class="text-muted">
+                            ${item.created_at}
+                        </small>
+
+                        <div class="mt-2">
+
+                            <button
+                                class="btn btn-warning btn-sm"
+                                onclick="pinBroadcast(${item.id})">
+
+                                📌 Pin
+
+                            </button>
+
+                            <button
+                                class="btn btn-danger btn-sm"
+                                onclick="deleteBroadcast(${item.id})">
+
+                                🗑 Delete
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+// =======================================
+// Delete Broadcast
+// =======================================
+
+async function deleteBroadcast(id) {
+
+    if (!confirm("Delete this broadcast?")) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch("/broadcasts/" + id, {
+
+            method: "DELETE"
+
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+
+            loadBroadcastHistory();
+
+        } else {
+
+            alert(result.message);
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
 
     }
 

@@ -1,0 +1,591 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>View Users</title>
+<link href="css/admin-skin.css" rel="stylesheet" type="text/css" />
+<script language='JavaScript'>
+function deluser(id)
+{
+if(confirm("Are You sure want to Delete user Record?"))
+{
+location.href='view-users.php?uid='+id
+}
+}
+</script>
+<style type="text/css">
+<!--
+.style1 {color: #0066CC}
+-->
+</style>
+</head>
+
+<body>
+<div class="topbar">
+
+  <table width="990" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+  <td width="365" align="left" valign="middle"><img src="images/logo.png"></td>
+  <td width="1187" align="right" valign="top"><img src="images/admin_watermark.gif" border="0" width="293" height="90"></td>
+  </tr>
+  </table>
+</div><div class="bodybar">
+
+  <table width="990" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+  <td width="180" align="left" valign="top">
+    	
+<!--<div class="menu_section">
+      <div id="min1" class="menu_box">
+        <span class="menu_header">Generate ID</span><span class="menu_headerr"  id="min1_icon">[ - ]</span></div>
+      <div><img src="images/admin_menu_bar.gif" width="168" height="4" alt="" border="0"></div>
+      <div id="slideup1">
+        <div class="menu faqmsg_body">
+<A href="gen-id.php" class="menu" ><img src="images/admin_users16.gif" border="0" class="icons">Manage Generate ID</A>
+</div>
+
+ </div>
+  	</div>-->
+	
+	<div class="menu_section">
+      <div id="min1" class="menu_box">
+        <span class="menu_header">Home</span><span class="menu_headerr"  id="min1_icon">[ - ]</span></div>
+      <div><img src="images/admin_menu_bar.gif" width="168" height="4" alt="" border="0"></div>
+      <div id="slideup1">
+        <div class="menu faqmsg_body">
+<a href="dashboard.php" class="menu" ><img src="images/admin_users16.gif" border="0" class="icons">Dashboard</A>
+</div>
+<div class="menu faqmsg_body">
+<a href="view-users.php" class="menu" ><img src="images/admin_users16.gif" border="0" class="icons">View Users</A>
+</div>
+ </div>
+  	</div>
+	<div class="menu_section">
+      <div id="min1" class="menu_box">
+        <span class="menu_header">Customer Profile</span><span class="menu_headerr"  id="min1_icon">[ - ]</span></div>
+      <div><img src="images/admin_menu_bar.gif" width="168" height="4" alt="" border="0"></div>
+      <div id="slideup1">
+        <div class="menu faqmsg_body">
+<a href="view-users.php" class="menu" ><img src="images/admin_users16.gif" border="0" class="icons">Manage Users</A>
+</div>
+
+ </div>
+  	</div>
+	
+
+ 	<div class="menu_section">
+      <div id="min1" class="menu_box">
+        <span class="menu_header">Manage Agent</span><span class="menu_headerr"  id="min1_icon_109" onclick="shfoo('109')">[ + ]</span></div>
+	
+      <div><img src="images/admin_menu_bar.gif" width="168" height="4" alt="" border="0"></div>
+      <div id="109">
+	 
+        <div class="menu faqmsg_body">
+<a href="add-role.php" class="menu" ><img src="images/admin_users16.gif" border="0" class="icons">Add New Agent</A>
+</div>
+
+<div class="menu faqmsg_body">
+<a href="view-role.php" class="menu" ><img src="images/admin_users16.gif" border="0" class="icons">View Agent</A>
+</div>
+       	
+  	
+ </div>
+  	</div>	
+	
+	<div class="menu_section">
+      <div id="min1" class="menu_box">
+        <span class="menu_header">Plan Settings</span><span class="menu_headerr"  id="min1_icon">[ - ]</span></div>
+      <div><img src="images/admin_menu_bar.gif" width="168" height="4" alt="" border="0"></div>
+      <div id="slideup1">
+        <div class="menu faqmsg_body">
+<a href="plan.php" class="menu" ><img src="images/admin_users16.gif" border="0" class="icons">Manage Plan</A>
+</div>
+
+ <!-- <div class="menu faqmsg_body">
+<A href="server.php" class="menu" ><img src="images/admin_users16.gif" border="0" class="icons">Incedence Serve</A>
+</div>-->
+
+ </div>
+  	</div>
+		
+<div class="menu_section">
+      <div id="min1" class="menu_box">
+        <span class="menu_header">Payment History</span><span class="menu_headerr"  id="min1_icon">[ - ]</span></div>
+      <div><img src="images/admin_menu_bar.gif" width="168" height="4" alt="" border="0"></div>
+      <div id="slideup1">
+ <div class="menu faqmsg_body">
+<a href="add_account_details.php" class="menu" ><img src="images/admin_users16.gif" border="0" class="icons">Add New Account</A>
+</div>
+
+        <div class="menu faqmsg_body">
+<a href="account.php" class="menu" ><img src="images/admin_users16.gif" border="0" class="icons">Manage Account</A>
+</div>
+
+
+ </div>
+  	</div>	
+
+<div class="menu_section">
+      <div id="min1" class="menu_box">
+        <span class="menu_header">Change Password</span><span class="menu_headerr"  id="min1_icon">[ - ]</span></div>
+      <div><img src="images/admin_menu_bar.gif" width="168" height="4" alt="" border="0"></div>
+      <div id="slideup1">
+        <div class="menu faqmsg_body">
+<a href="change_password.php" class="menu" ><img src="images/admin_users16.gif" border="0" class="icons">Change Password</A>
+</div>
+
+ </div>
+  	</div>
+	<div class="menu_section">
+      <div id="min1" class="menu_box">
+        <span class="menu_header">Settings</span><span class="menu_headerr"  id="min1_icon">[ - ]</span></div>
+      <div><img src="images/admin_menu_bar.gif" width="168" height="4" alt="" border="0"></div>
+      <div id="slideup1">
+        <div class="menu faqmsg_body">
+<a href="" class="menu" ><img src="images/admin_users16.gif" border="0" class="icons">Create Access Level</A>
+</div>
+
+ </div>
+  	</div>
+	
+
+    
+  <div class="menu_section">
+    <div><img src="images/admin_menu_bar.gif" border="0"></div>
+
+  <div id="slideup3">
+    <div class="menu"><a href="?logout=logout" class="menu"><img src="images/admin_admins16.gif" border="0" class="icons">Logout</a></div>
+   </div>
+  </div>
+  
+    </td>
+  <td width="808" align="left" valign="top">
+  <table width="808" cellspacing="0" cellpadding="4" border="0" bgcolor="silver" align="center" class="bordertable" >
+	<tr bgcolor="#e5e5e5">
+		<td width="389" class="header_td">View Users  </td>
+	  	<td width="401" align="right">&nbsp;</td>
+	</tr>
+ </table>
+  <form action="" method="post">
+  <div id="message"></div>
+    <table width="808" border="0" cellspacing="0" cellpadding="0" class="bordertable" >
+      <tr bgcolor="whitesmoke">
+        <td colspan="7" align="left" valign="top" bgcolor="#FFFFFF" class="topheader_td">Search By <span class="style1">Customer ID/Name
+/Email Id/Phone number</span> 
+          <input name="ser" type="text" id="ser" />
+          &nbsp;
+          <input type="submit" name="Submit" value="Search" /> 
+          &nbsp;&nbsp;<a href="?">VIEW ALL</a> </td>
+        </tr>
+      <tr bgcolor="whitesmoke">
+        <td width="90" align="left" valign="top" bgcolor="whitesmoke" class="topheader_td">Customer 
+          ID </td>
+        <td width="192" align="left" valign="top" bgcolor="whitesmoke" class="topheader_td">Name</td>
+        <td width="187" align="left" valign="top" bgcolor="whitesmoke" class="topheader_td">Email</td>
+        <td width="129" align="left" valign="top" bgcolor="whitesmoke" class="topheader_td">Phone 
+          Number </td>
+        <td width="77" align="left" valign="top" bgcolor="whitesmoke" class="topheader_td">Agent name</td>
+        <td width="210" align="left" valign="top" bgcolor="whitesmoke" class="topheader_td">Customer Comments </td>
+        <td width="210" align="left" valign="top" bgcolor="whitesmoke" class="topheader_td">Case Status</td>
+        <td width="110" align="left" valign="top" bgcolor="whitesmoke" class="topheader_td">Action</td>
+      </tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25086</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >JOAN &amp; GEORGE WARNER</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext">Pankaj Sharma</td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26667" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26667" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26667" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26667')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25085</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Dowayne Deloney</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26666" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26666" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26666" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26666')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25084</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Doris Glassford</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26665" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26665" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26665" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26665')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25083</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Doriane M Colwell</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26664" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26664" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26664" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26664')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25082</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Dorea R Sowinski</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26663" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26663" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26663" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26663')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25081</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Donald L Anderson</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26662" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26662" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26662" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26662')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25080</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Don W Plumley</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26661" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26661" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26661" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26661')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25079</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Diane Taylor</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26660" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26660" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26660" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26660')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25078</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Diane Edwards</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26659" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26659" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26659" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26659')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25077</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Devon Lawrence</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26658" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26658" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26658" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26658')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25076</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Dr Michael Forman</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26657" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26657" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26657" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26657')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25075</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Derwin D Francom</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26656" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26656" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26656" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26656')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25074</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >DEBRA MCLELLAN</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26655" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26655" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26655" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26655')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25073</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Debra Goss</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26654" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26654" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26654" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26654')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25072</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Debra Alber</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26653" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26653" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26653" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26653')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25071</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Deborah Fischer</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26652" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26652" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26652" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26652')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25070</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Deborah D Milliken</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26651" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26651" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26651" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26651')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25069</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Deborah A. Turner</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26650" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26650" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26650" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26650')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25068</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Dean Singh</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26649" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26649" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26649" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26649')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25067</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Deadre R Albritton</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26648" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26648" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26648" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26648')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25066</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Davis J Kieff</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26647" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26647" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26647" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26647')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25065</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >David M Root</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26646" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26646" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26646" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26646')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25064</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Dr. Patricia Walton</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26645" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26645" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26645" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26645')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25063</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Edward Dong</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26644" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26644" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26644" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26644')" class="bluelink">Delete</a>--></td>
+</tr>
+      <tr onmousemove="javascript: this.style.background='#ECF1F2'" onmouseout="javascript: this.style.background='#FFFFFF'">
+        <td width="90" align="left" valign="top"  class="left-tdtext"><strong>Tech25062</strong></td>
+        <td width="192" align="left" valign="top" class="left-tdtext" >Edward F furrey</td>
+        <td width="187" align="left" valign="top" class="left-tdtext">*****</td>
+
+        <td width="129" align="left" valign="top" class="left-tdtext">
+*****
+</td>
+        <td width="120" align="left" valign="top" class="left-tdtext"></td>
+        <td width="210" align="left" valign="top" class="left-tdtext"><a href="customer_comments.php?useraid=26643" target="_blank" class="bluelink">Comment Details </a></td>
+                <td align='center'><b style='color:#ffffff; padding:5px 4px 5px 4px; background-color:#228B22;'>Open</b>		</td>
+        <td width="110" align="left" valign="top" class="left-tdtext">
+		
+		<a href="view-user-details.php?useraid=26643" class="bluelink">View</a> |<a href="view-user-details_edit.php?useraid=26643" class="bluelink">Edit</a>   <!--| <a href="javascript: deluser('26643')" class="bluelink">Delete</a>--></td>
+</tr>
+ 
+<tr>
+<td colspan="11" align="center" valign="middle">
+<div style="float:left; background-color:#FFFFCC; padding-top:5px; padding-bottom:5px; margin-top:5px; width:100%;">
+<span class="regsubhead"><font color="#FFFFFF"> 1  |  <a href="http://techbee-infosystem.com/crm/maincrm/view-users.php?page=2&" class='sim'><font color='#000000'>2</font></a>  |  <a href="http://techbee-infosystem.com/crm/maincrm/view-users.php?page=3&" class='sim'><font color='#000000'>3</font></a>  |  <a href="http://techbee-infosystem.com/crm/maincrm/view-users.php?page=4&" class='sim'><font color='#000000'>4</font></a>  |  <a href="http://techbee-infosystem.com/crm/maincrm/view-users.php?page=5&" class='sim'><font color='#000000'>5</font></a>  |  <a href="http://techbee-infosystem.com/crm/maincrm/view-users.php?page=6&" class='sim'><font color='#000000'>6</font></a>  |  <a href="http://techbee-infosystem.com/crm/maincrm/view-users.php?page=7&" class='sim'><font color='#000000'>7</font></a>  |  <a href="http://techbee-infosystem.com/crm/maincrm/view-users.php?page=8&" class='sim'><font color='#000000'>8</font></a>  |  <a href="http://techbee-infosystem.com/crm/maincrm/view-users.php?page=9&" class='sim'><font color='#000000'>9</font></a>  |  <a href="http://techbee-infosystem.com/crm/maincrm/view-users.php?page=10&" class='sim'><font color='#000000'>10</font></a> </font></span> <a href="http://techbee-infosystem.com/crm/maincrm/view-users.php?page=2&" class='sim'><font color='#000000'><b>[Next]</b></font></a>  <a href="http://techbee-infosystem.com/crm/maincrm/view-users.php?page=63&" class='sim'><font color='#000000'><b>[Last]</b></font></a> </div></td>
+      		</tr> 
+    </table>  
+  </form>
+  </td>
+  </tr>
+  </table>
+</div>
+<div class="bottombar">
+
+  <table width='990' align="center" cellpadding='0' cellspacing='0'>
+  <tr>
+  <td width="365" align="left" valign='middle' class="textcolor">
+	<font color="#FFFFFF">Copyright 2012 . All Rights reserved</font>
+</td>
+<td width="1187" align='right' valign='top' class="textcolor"></td>
+  </tr>
+  </table>
+</div></body>
+</html>

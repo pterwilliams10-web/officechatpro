@@ -8,8 +8,8 @@ const helmet = require("helmet");
 const compression = require("compression");
 const path = require("path");
 const session = require("express-session");
+const db = require("./config/database");
 
-require("./config/database");
 
 const app = express();
 
@@ -69,14 +69,18 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const messageRoutes = require("./routes/messages");
 const uploadRoutes = require("./routes/uploadRoutes");
-const broadcastRoutes = require("./routes/broadcasts");
+const historyRoutes = require("./routes/history");
+const broadcastRoutes = require("./routes/broadcast");
+const groupRoutes =
+require("./routes/groups");
 
 app.use("/", authRoutes);
 app.use("/", userRoutes);
 app.use("/", messageRoutes);
 app.use("/upload", uploadRoutes);
+app.use("/", historyRoutes);
 app.use("/", broadcastRoutes);
-
+app.use(groupRoutes);
 
 io.on("connection", (socket) => {
 
@@ -117,15 +121,14 @@ io.on("connection", (socket) => {
 
 });
 
-// ===============================
-// Broadcast Message
-// ===============================
+// Inside your io.on("connection", (socket) => { ... }) block:
 socket.on("broadcast_message", (data) => {
-
-    console.log("📢 Broadcast:", data);
-
-    io.emit("receive_broadcast", data);
-
+    // Sends the payload to every single active client connected online
+    io.emit("receive_broadcast", {
+        sender_name: data.sender_name,
+        message: data.message,
+        created_at: data.created_at || new Date()
+    });
 });
 });
 
@@ -140,3 +143,4 @@ server.listen(PORT, () => {
     console.log(`Open your browser at: http://localhost:${PORT}`);
 
 });
+

@@ -1,6 +1,6 @@
 const db = require("../config/database");
 
-// Save a broadcast
+// Send Broadcast
 exports.sendBroadcast = (req, res) => {
 
     if (!req.session.user) {
@@ -12,12 +12,12 @@ exports.sendBroadcast = (req, res) => {
 
     const { message } = req.body;
 
-    if (!message || message.trim() === "") {
-        return res.json({
-            success: false,
-            message: "Broadcast message is required."
-        });
-    }
+if (!message || message.trim() === "") {
+    return res.status(400).json({
+        success:false,
+        message:"Message required"
+    });
+}
 
     db.prepare(`
         INSERT INTO broadcasts
@@ -26,7 +26,8 @@ exports.sendBroadcast = (req, res) => {
             sender_name,
             message
         )
-        VALUES (?, ?, ?)
+        VALUES
+        (?, ?, ?)
     `).run(
         req.session.user.id,
         req.session.user.full_name,
@@ -34,25 +35,24 @@ exports.sendBroadcast = (req, res) => {
     );
 
     res.json({
-        success: true,
-        message: "Broadcast sent."
+        success: true
     });
 
 };
 
-// Load broadcasts (last 24 hours)
+// Load Broadcast History
 exports.getBroadcasts = (req, res) => {
 
-    // Remove broadcasts older than 24 hours
-    db.prepare(`
-        DELETE FROM broadcasts
-        WHERE created_at < datetime('now','-1 day')
-    `).run();
-
     const broadcasts = db.prepare(`
-        SELECT *
+        SELECT
+            broadcasts.*,
+            users.full_name AS sender_name
         FROM broadcasts
-        ORDER BY created_at DESC
+
+        JOIN users
+        ON users.id = broadcasts.sender_id
+
+        ORDER BY broadcasts.created_at DESC
     `).all();
 
     res.json({

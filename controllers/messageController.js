@@ -11,13 +11,50 @@ exports.sendMessage = (req, res) => {
     }
 
     const sender_id = req.session.user.id;
-    const {
+
+const {
     receiver_id,
     message,
     file_name,
     file_path,
     file_type
 } = req.body;
+
+// Get sender role
+const sender = db.prepare(`
+    SELECT role
+    FROM users
+    WHERE id = ?
+`).get(sender_id);
+
+// Get receiver role
+const receiver = db.prepare(`
+    SELECT role
+    FROM users
+    WHERE id = ?
+`).get(receiver_id);
+
+console.log(sender.role, receiver.role);
+
+// Decide expiry
+let expires_at;
+
+if (
+    sender.role === "Admin" ||
+    receiver.role === "Admin"
+) {
+
+    expires_at = db.prepare(`
+        SELECT datetime('now','+60 days') AS expiry
+    `).get().expiry;
+
+} else {
+
+    expires_at = db.prepare(`
+        SELECT datetime('now','+1 minute') AS expiry
+    `).get().expiry;
+
+}
 
    if (!receiver_id) {
     return res.json({
@@ -41,17 +78,19 @@ INSERT INTO messages
     message,
     file_name,
     file_path,
-    file_type
+    file_type,
+    expires_at
 )
 VALUES
-(?, ?, ?, ?, ?, ?)
+(?, ?, ?, ?, ?, ?, ?)
 `).run(
     sender_id,
     receiver_id,
     message || null,
     file_name || null,
     file_path || null,
-    file_type || null
+    file_type || null,
+    expires_at
 );
 
     res.json({
@@ -76,14 +115,24 @@ exports.getConversation = (req, res) => {
     const currentUser = req.session.user.id;
     const otherUser = req.params.id;
 
+    // Delete expired messages
+db.prepare(`
+    DELETE FROM messages
+    WHERE expires_at IS NOT NULL
+    AND expires_at <= datetime('now')
+`).run();
+
     const messages = db.prepare(`
-        SELECT *
-        FROM messages
-        WHERE
-            (sender_id=? AND receiver_id=?)
-            OR
-            (sender_id=? AND receiver_id=?)
-        ORDER BY created_at ASC
+       SELECT *
+FROM messages
+WHERE
+(
+    (sender_id=? AND receiver_id=?)
+    OR
+    (sender_id=? AND receiver_id=?)
+)
+AND created_at >= datetime('now','-1 hour')
+ORDER BY created_at ASC;
     `).all(
         currentUser,
         otherUser,

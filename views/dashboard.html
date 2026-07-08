@@ -85,25 +85,17 @@
         </div>
 
         
+       <!-- ... inside .chat-input-area ... -->
         <div class="chat-input-area">
             <button class="tool-btn">😊</button>
 
-            <!-- FIXED: Hidden file input and working Paperclip -->
-
-            <input
-    type="file"
-    id="fileAttachmentInput"
-    style="display:none"
-    onchange="handleFileSelected(this)">
-            <input type="file" id="fileAttachmentInput" style="display: none;" onchange="handleFileSelected(this)">
+            <!-- Consolidated File Input -->
+            <input type="file" id="fileAttachmentInput" style="display:none" onchange="handleFileSelected(this)">
             <button class="tool-btn" onclick="triggerFileUpload()">📎</button>
-
 
             <input type="text" id="messageBox" placeholder="Type a message...">
             <button id="sendBtn" class="send-btn">Send</button>
         </div>
-    </main>
-</div>
 
 
 <!-- Admin Management Panel Overlay -->
@@ -123,7 +115,90 @@
             <input type="password" id="adminAddPassword" placeholder="Password" style="width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
             <input type="text" id="adminAddRole" placeholder="Role (e.g., Employee, admin)" value="Employee" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #d1d5db; border-radius: 6px;">
             <button onclick="adminAddUser()" style="width: 100%; padding: 10px; background: #198754; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Create User</button>
+       <hr>
+
+<hr>
+
+<h4>📜 Message History (Last 60 Days)</h4>
+
+<div class="mb-3">
+    <input
+        type="text"
+        id="historySearch"
+        class="form-control"
+        placeholder="🔍 Search messages..."
+        onkeyup="filterHistory()">
+</div>
+
+<div style="max-height:300px;overflow-y:auto;">
+
+<table class="table table-bordered table-striped">
+
+<thead class="table-dark">
+
+<tr>
+    <th>Date</th>
+    <th>From</th>
+    <th>To</th>
+    <th>Last Message</th>
+    <th>Conversation</th>
+</tr>
+
+</thead>
+
+<tbody id="historyTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+<button
+class="btn btn-primary mt-2"
+onclick="loadMessageHistory()">
+
+Refresh History
+
+</button>
+       
         </div>
+
+        <hr>
+
+<hr>
+
+<h4>📢 Broadcast Center</h4>
+
+<textarea
+    id="broadcastMessage"
+    class="form-control mb-2"
+    rows="3"
+    placeholder="Write a company announcement..."></textarea>
+
+<button
+    class="btn btn-primary w-100 mb-2"
+    onclick="sendBroadcast()">
+    📢 Send Broadcast
+</button>
+
+<button
+    class="btn btn-secondary w-100 mb-2"
+    onclick="loadBroadcastHistory()">
+    🔄 Refresh History
+</button>
+
+<div
+    id="broadcastHistory"
+    style="
+        max-height:300px;
+        overflow:auto;
+        border:1px solid #ddd;
+        padding:10px;
+        border-radius:8px;">
+</div>
+
+<hr>
 
         <!-- ===========================
      Employee Management
@@ -171,6 +246,24 @@
     </div>
 
 </div>
+
+<hr>
+
+<h4>📊 Reports</h4>
+
+<button class="btn btn-info w-100 mb-2">
+    Employee Activity
+</button>
+
+<button class="btn btn-info w-100 mb-2">
+    Chat Statistics
+</button>
+
+<button class="btn btn-info w-100">
+    Export Report
+</button>
+
+<hr>
         <!-- Section 2: Manage Existing Users (For Password updates) -->
         <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #edf2f7;">
             <h3 style="font-size: 16px; margin-bottom: 10px; color: #475569;">🔑 Update Password</h3>
@@ -193,3 +286,50 @@
 
 </body>
 </html>
+
+<hr>
+
+
+<div class="mb-3">
+
+    <input
+        type="text"
+        id="historySearch"
+        class="form-control"
+        placeholder="🔍 Search by employee or message..."
+        onkeyup="filterHistory()">
+
+</div>
+
+<h4>🕒 Message History</h4>
+
+<input
+    type="text"
+    id="historySearch"
+    class="form-control mb-2"
+    placeholder="Search employee or message">
+
+<div
+    id="messageHistory"
+    style="
+        max-height:500px;
+        overflow-y:auto;
+        border:1px solid #ddd;
+        padding:10px;
+        background:white;
+    ">
+</div>
+
+<h4>⚙️ Settings</h4>
+
+<button class="btn btn-dark w-100 mb-2">
+    Company Settings
+</button>
+
+<button class="btn btn-dark w-100 mb-2">
+    Backup Database
+</button>
+
+<button class="btn btn-dark w-100">
+    System Logs
+</button>

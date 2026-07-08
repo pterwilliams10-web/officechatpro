@@ -3,10 +3,14 @@ const router = express.Router();
 
 const broadcastController = require("../controllers/broadcastController");
 
-// Send a broadcast
-router.post("/broadcasts/send", broadcastController.sendBroadcast);
+router.post(
+    "/broadcast/send",
+    broadcastController.sendBroadcast
+);
 
-// Load broadcasts
-router.get("/broadcasts", broadcastController.getBroadcasts);
+router.get(
+    "/broadcast/history",
+    broadcastController.getBroadcasts
+);
 
 module.exports = router;

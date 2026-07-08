@@ -85,6 +85,24 @@ CREATE TABLE IF NOT EXISTS announcements (
 )
 `).run();
 
+// ============================
+// ADD expires_at COLUMN (Runs only once)
+// ============================
+
+try {
+
+    db.prepare(`
+        ALTER TABLE messages
+        ADD COLUMN expires_at DATETIME
+    `).run();
+
+    console.log("✅ expires_at column added.");
+
+} catch (err) {
+
+    // Ignore if the column already exists
+
+}
 
 // ============================
 // CREATE DEFAULT ADMIN
@@ -131,4 +149,70 @@ CREATE TABLE IF NOT EXISTS broadcasts (
 )
 `).run();
 
+// ============================
+// CHECK RECENT MESSAGES
+// ============================
+
+const rows = db.prepare(`
+    SELECT id, message, created_at, expires_at
+    FROM messages
+    ORDER BY id DESC
+    LIMIT 5
+`).all();
+
+console.log(rows);
+
+
+// ============================
+// BROADCAST MESSAGES TABLE
+// ============================
+
+db.prepare(`
+CREATE TABLE IF NOT EXISTS broadcasts (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    sender_id INTEGER NOT NULL,
+
+    message TEXT,
+
+    file_name TEXT,
+
+    file_path TEXT,
+
+    file_type TEXT,
+
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY(sender_id) REFERENCES users(id)
+
+)
+`).run();
+
+// ============================
+// CHAT GROUPS TABLES
+// ============================
+
+db.prepare(`
+CREATE TABLE IF NOT EXISTS chat_groups (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    created_by INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(created_by) REFERENCES users(id)
+)
+`).run();
+
+db.prepare(`
+CREATE TABLE IF NOT EXISTS chat_group_members (
+    group_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    PRIMARY KEY (group_id, user_id),
+    FOREIGN KEY(group_id) REFERENCES chat_groups(id) ON DELETE CASCADE,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+)
+`).run();
+
+
+// EXPORT DATABASE
 module.exports = db;
