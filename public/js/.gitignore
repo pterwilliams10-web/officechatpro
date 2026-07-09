@@ -1,1 +1,5 @@
-echo ".env" >> OfficeChatPro/.gitignore
+node_modules/
+.env
+officechat.db
+uploads/*
+!uploads/.gitkeep
