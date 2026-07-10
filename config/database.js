@@ -61,6 +61,68 @@ CREATE TABLE IF NOT EXISTS messages (
 `).run();
 
 
+db.prepare(`
+CREATE TABLE IF NOT EXISTS groups (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    created_by INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY(created_by)
+    REFERENCES users(id)
+)
+`).run();
+
+
+db.prepare(`
+CREATE TABLE IF NOT EXISTS group_members (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    group_id INTEGER NOT NULL,
+
+    user_id INTEGER NOT NULL,
+
+    role TEXT DEFAULT 'Member',
+
+    joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY(group_id)
+    REFERENCES groups(id),
+
+    FOREIGN KEY(user_id)
+    REFERENCES users(id)
+)
+`).run();
+
+db.prepare(`
+CREATE TABLE IF NOT EXISTS group_messages (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    group_id INTEGER NOT NULL,
+
+    sender_id INTEGER NOT NULL,
+
+    message TEXT,
+
+    file_name TEXT,
+
+    file_path TEXT,
+
+    file_type TEXT,
+
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY(group_id)
+    REFERENCES groups(id),
+
+    FOREIGN KEY(sender_id)
+    REFERENCES users(id)
+
+)
+`).run();
+
 // ============================
 // ANNOUNCEMENTS TABLE
 // ============================

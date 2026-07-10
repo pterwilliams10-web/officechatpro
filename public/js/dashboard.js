@@ -64,13 +64,24 @@ if (result.user.role === "Admin") {
 // Load Employees
 // ===============================
 async function loadEmployees() {
+
     try {
+
+        // -------------------------
+        // Load Employees
+        // -------------------------
+
         const response = await fetch("/users");
         const users = await response.json();
 
-        let html = "";
+        let html = `
+            <li class="list-group-item active">
+                👥 EMPLOYEES
+            </li>
+        `;
 
         users.forEach(user => {
+
             html += `
                 <li
                     class="list-group-item"
@@ -78,15 +89,43 @@ async function loadEmployees() {
                     👤 ${user.full_name}
                 </li>
             `;
+
+        });
+
+        // -------------------------
+        // Load Groups
+        // -------------------------
+
+        const groupResponse = await fetch("/groups");
+        const groups = await groupResponse.json();
+
+        html += `
+            <li class="list-group-item active mt-2">
+                📁 GROUPS
+            </li>
+        `;
+
+        groups.forEach(group => {
+
+            html += `
+                <li
+                    class="list-group-item"
+                    onclick="openGroup(${group.id}, '${group.name}', this)">
+                    👥 ${group.name}
+                </li>
+            `;
+
         });
 
         document.getElementById("employeeList").innerHTML = html;
 
     } catch (err) {
-        console.error(err);
-    }
-}
 
+        console.error(err);
+
+    }
+
+}
 // ===============================
 // Select Broadcast Mode
 // ===============================
@@ -190,13 +229,45 @@ async function selectUser(id, name, element) {
 // Send Message / Broadcast
 // ===============================
 document.getElementById("sendBtn").addEventListener("click", async () => {
+
+    // ======================
+// GROUP CHAT
+// ======================
+if (currentGroup) {
+
+    await sendGroupMessage();
+
+    return;
+
+}
     if (!selectedUser && !isBroadcastMode) {
         alert("Please select an employee or broadcast mode first.");
         return;
     }
 
     const messageBox = document.getElementById("messageBox");
-    const message = messageBox.value.trim();
+
+messageBox.addEventListener("keypress", function(e){
+
+    if(e.key === "Enter"){
+
+        e.preventDefault();
+
+        if(currentGroup){
+
+            sendGroupMessage();
+
+        }else{
+
+            sendMessage();
+
+        }
+
+    }
+
+});
+
+const message = messageBox.value.trim();
 
     if (message === "") return;
 
@@ -1030,7 +1101,7 @@ async function loadGroupMembers() {
 
 async function createGroup() {
 
-    const nameInput = document.getElementById("groupName");
+    const nameInput = document.getElementById("createGroupName")
     const name = nameInput.value.trim();
     const memberIds = Array
         .from(document.querySelectorAll(".group-member-checkbox:checked"))
@@ -1296,5 +1367,129 @@ async function deleteBroadcast(id) {
         console.error(err);
 
     }
+
+}
+
+function openCreateGroupModal(){
+
+    document.getElementById("createGroupModal").style.display="flex";
+
+    loadGroupUsers();
+
+}
+
+function closeCreateGroupModal(){
+
+    document.getElementById("createGroupModal").style.display="none";
+
+}
+async function loadGroupUsers(){
+
+    const response=await fetch("/users");
+
+    const users=await response.json();
+
+    let html="";
+
+    users.forEach(user=>{
+
+        html+=`
+
+<label>
+
+<input
+type="checkbox"
+value="${user.id}">
+
+${user.full_name}
+
+</label>
+
+<br>
+
+`;
+
+    });
+
+    document.getElementById("createGroupMembersList").innerHTML=html;
+
+}
+
+async function createGroup(){
+
+    const name=document.getElementById("createGroupName").value;
+
+    const description=document.getElementById("createGroupDescription").value;
+
+    const members=[];
+
+    document
+    .querySelectorAll("#createGroupMembersList input:checked")
+    .forEach(c=>{
+
+        members.push(parseInt(c.value));
+
+    });
+
+    const response=await fetch("/groups/create",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+            name,
+            description,
+            members
+
+        })
+
+    });
+
+    const result=await response.json();
+
+    alert(result.message);
+
+    if(result.success){
+
+        closeCreateGroupModal();
+
+        loadGroups();
+
+    }
+
+}async function loadGroups(){
+
+    const response = await fetch("/groups");
+
+    const groups = await response.json();
+
+    let html = "";
+
+    groups.forEach(group => {
+
+        html += `
+            <li
+                class="list-group-item"
+                onclick="openGroup(${group.id}, '${group.name}')">
+
+                👥 ${group.name}
+
+            </li>
+        `;
+
+    });
+    function openGroup(id, name){
+
+    console.log("Opening group:", id);
+
+    document.getElementById("chatTitle").innerText = name;
+
+}
+
+    document.getElementById("groupList").innerHTML = html;
 
 }

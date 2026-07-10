@@ -71,8 +71,9 @@ const messageRoutes = require("./routes/messages");
 const uploadRoutes = require("./routes/uploadRoutes");
 const historyRoutes = require("./routes/history");
 const broadcastRoutes = require("./routes/broadcast");
-const groupRoutes =
-require("./routes/groups");
+const groupRoutes = require("./routes/groups");
+const groupMessageRoutes =
+require("./routes/groupMessages");
 
 app.use("/", authRoutes);
 app.use("/", userRoutes);
@@ -80,7 +81,8 @@ app.use("/", messageRoutes);
 app.use("/upload", uploadRoutes);
 app.use("/", historyRoutes);
 app.use("/", broadcastRoutes);
-app.use(groupRoutes);
+app.use("/", groupRoutes);
+app.use("/", groupMessageRoutes);
 
 io.on("connection", (socket) => {
 

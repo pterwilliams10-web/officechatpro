@@ -1,98 +1,118 @@
 const db = require("../config/database");
 
-function requireAdmin(req, res) {
+// Create Group
+exports.createGroup = (req, res) => {
+
     if (!req.session.user) {
-        res.status(401).json({
+        return res.status(401).json({
             success: false,
             message: "Unauthorized"
         });
-        return false;
     }
 
-    if (req.session.user.role !== "Admin") {
-        res.status(403).json({
-            success: false,
-            message: "Access denied."
-        });
-        return false;
-    }
-
-    return true;
-}
-
-exports.createGroup = (req, res) => {
-    if (!requireAdmin(req, res)) return;
-
-    const name = (req.body.name || "").trim();
-    const memberIds = Array.isArray(req.body.member_ids)
-        ? req.body.member_ids.map(Number).filter(Boolean)
-        : [];
+    const { name, description, members } = req.body;
 
     if (!name) {
-        return res.status(400).json({
+        return res.json({
             success: false,
             message: "Group name is required."
         });
     }
 
-    if (memberIds.length === 0) {
-        return res.status(400).json({
-            success: false,
-            message: "Select at least one group member."
+    const result = db.prepare(`
+        INSERT INTO groups
+        (
+            name,
+            description,
+            created_by
+        )
+        VALUES
+        (?, ?, ?)
+    `).run(
+        name,
+        description || "",
+        req.session.user.id
+    );
+
+    const groupId = result.lastInsertRowid;
+
+    // Add creator as Owner
+    db.prepare(`
+        INSERT INTO group_members
+        (
+            group_id,
+            user_id,
+            role
+        )
+        VALUES
+        (?, ?, ?)
+    `).run(
+        groupId,
+        req.session.user.id,
+        "Owner"
+    );
+
+    // Add selected members
+    if (Array.isArray(members)) {
+
+        const insert = db.prepare(`
+            INSERT INTO group_members
+            (
+                group_id,
+                user_id,
+                role
+            )
+            VALUES
+            (?, ?, ?)
+        `);
+
+        members.forEach(userId => {
+
+            if (userId != req.session.user.id) {
+
+                insert.run(
+                    groupId,
+                    userId,
+                    "Member"
+                );
+
+            }
+
+        });
+
+    }
+
+    res.json({
+        success: true,
+        message: "Group created successfully."
+    });
+
+};
+
+// Get Groups
+exports.getGroups = (req, res) => {
+
+    if (!req.session.user) {
+        return res.status(401).json({
+            success: false
         });
     }
 
-    const create = db.transaction(() => {
-        const result = db.prepare(`
-            INSERT INTO chat_groups (name, created_by)
-            VALUES (?, ?)
-        `).run(name, req.session.user.id);
-
-        const addMember = db.prepare(`
-            INSERT OR IGNORE INTO chat_group_members (group_id, user_id)
-            VALUES (?, ?)
-        `);
-
-        memberIds.forEach(userId => {
-            addMember.run(result.lastInsertRowid, userId);
-        });
-
-        return result.lastInsertRowid;
-    });
-
-    const groupId = create();
-
-    res.json({
-        success: true,
-        message: "Group created successfully.",
-        group_id: groupId
-    });
-};
-
-exports.getGroups = (req, res) => {
-    if (!requireAdmin(req, res)) return;
-
     const groups = db.prepare(`
         SELECT
-            chat_groups.id,
-            chat_groups.name,
-            chat_groups.created_at,
-            users.full_name AS created_by_name,
-            COUNT(chat_group_members.user_id) AS member_count,
-            GROUP_CONCAT(member_users.full_name, ', ') AS members
-        FROM chat_groups
-        JOIN users
-            ON users.id = chat_groups.created_by
-        LEFT JOIN chat_group_members
-            ON chat_group_members.group_id = chat_groups.id
-        LEFT JOIN users member_users
-            ON member_users.id = chat_group_members.user_id
-        GROUP BY chat_groups.id
-        ORDER BY chat_groups.created_at DESC
-    `).all();
+            g.id,
+            g.name,
+            g.description
+        FROM groups g
 
-    res.json({
-        success: true,
-        groups
-    });
+        INNER JOIN group_members gm
+            ON gm.group_id = g.id
+
+        WHERE gm.user_id = ?
+
+        ORDER BY g.name
+    `).all(req.session.user.id);
+
+    res.json(groups);
+
 };

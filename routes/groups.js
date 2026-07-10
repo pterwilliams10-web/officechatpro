@@ -1,25 +1,16 @@
-const express=require("express");
+const express = require("express");
+const router = express.Router();
 
-const router=express.Router();
-
-
-const controller=
-require("../controllers/groupController");
-
-
+const groupController = require("../controllers/groupController");
 
 router.post(
-"/groups/create",
-controller.createGroup
+    "/groups/create",
+    groupController.createGroup
 );
-
-
 
 router.get(
-"/groups",
-controller.getGroups
+    "/groups",
+    groupController.getGroups
 );
 
-
-
-module.exports=router;
+module.exports = router;

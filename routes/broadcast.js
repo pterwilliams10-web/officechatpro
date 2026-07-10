@@ -13,4 +13,9 @@ router.get(
     broadcastController.getBroadcasts
 );
 
+router.delete(
+    "/broadcasts/:id",
+    broadcastController.deleteBroadcast
+);
+
 module.exports = router;

@@ -61,3 +61,27 @@ exports.getBroadcasts = (req, res) => {
     });
 
 };
+
+// Delete Broadcast
+exports.deleteBroadcast = (req, res) => {
+
+    if (!req.session.user) {
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized"
+        });
+    }
+
+    const id = req.params.id;
+
+    db.prepare(`
+        DELETE FROM broadcasts
+        WHERE id = ?
+    `).run(id);
+
+    res.json({
+        success: true,
+        message: "Broadcast deleted."
+    });
+
+};

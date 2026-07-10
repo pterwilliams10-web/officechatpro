@@ -27,6 +27,24 @@
             <button id="navEmployees" class="nav-item" onclick="switchTab('employees')">
                 👥 Employees
             </button>
+<button
+    id="newGroupBtn"
+    class="nav-item"
+    onclick="openCreateGroupModal()">
+
+    👥 New Group
+
+</button>
+
+<div id="groupSection">
+
+    <h4 style="padding:10px;">👥 Groups</h4>
+
+    <ul id="groupList" class="employee-list">
+
+    </ul>
+
+</div>
 
             <button id="adminNavBtn" class="nav-item" style="display:none;" onclick="toggleAdminPanel(true)">
     🛠️ Admin Controls
@@ -282,10 +300,82 @@ Refresh History
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
+
+<script src="/js/groups.js"></script>
+
 <script src="/js/dashboard.js"></script>
 
-</body>
-</html>
+<div id="createGroupModal"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.45);
+justify-content:center;
+align-items:center;
+z-index:9999;">
+
+<div
+style="
+background:white;
+width:500px;
+padding:25px;
+border-radius:12px;">
+
+<h2>Create Group</h2>
+
+<input
+id="createGroupName"
+class="form-control"
+placeholder="Group Name">
+
+<br>
+
+<textarea
+id="createGroupDescription"
+class="form-control"
+placeholder="Description"></textarea>
+
+<br>
+
+<h5>Select Members</h5>
+
+<div
+id="createGroupMembersList"
+style="
+height:220px;
+overflow:auto;
+border:1px solid #ddd;
+padding:10px;">
+
+Loading...
+
+</div>
+
+<br>
+
+<button
+class="btn btn-success"
+onclick="createGroup()">
+
+Create Group
+
+</button>
+
+<button
+class="btn btn-secondary"
+onclick="closeCreateGroupModal()">
+
+Cancel
+
+</button>
+
+</div>
+
+</div>
 
 <hr>
 
@@ -304,11 +394,7 @@ Refresh History
 <h4>🕒 Message History</h4>
 
 <input
-    type="text"
-    id="historySearch"
-    class="form-control mb-2"
-    placeholder="Search employee or message">
-
+    
 <div
     id="messageHistory"
     style="
@@ -333,3 +419,8 @@ Refresh History
 <button class="btn btn-dark w-100">
     System Logs
 </button>
+
+
+</body>
+</html>
+
