@@ -470,10 +470,58 @@ if (typingIndicator) {
 
                 console.log(msg.created_at);
 
-           bubble.innerHTML = `
-    <div class="message-content">
-        ${msg.message}
-    </div>
+           let content = "";
+
+// Text message
+if (msg.message) {
+
+    content = `
+        <div class="message-content">
+            ${msg.message}
+        </div>
+    `;
+
+}
+// Image
+else if (msg.file_type && msg.file_type.startsWith("image/")) {
+
+    content = `
+        <div class="message-content">
+
+            <img
+                src="${msg.file_path}"
+                style="max-width:250px;border-radius:10px;cursor:pointer;">
+
+            <br>
+
+            <a href="${msg.file_path}" target="_blank">
+                📷 ${msg.file_name}
+            </a>
+
+        </div>
+    `;
+
+}
+// Any other file
+else {
+
+    content = `
+        <div class="message-content">
+
+            📎
+            <a href="${msg.file_path}" target="_blank">
+
+                ${msg.file_name}
+
+            </a>
+
+        </div>
+    `;
+
+}
+
+bubble.innerHTML = `
+    ${content}
 
     <span class="message-time">
         ${formatMessageTime(msg.created_at)}
@@ -767,5 +815,95 @@ function searchMessages() {
         }
 
     });
+
+}
+// =========================================
+// Open File Picker
+// =========================================
+
+function triggerFileUpload() {
+
+    document
+        .getElementById("fileAttachmentInput")
+        .click();
+
+}
+// =========================================
+// Upload Selected File
+// =========================================
+
+async function handleFileSelected(input) {
+
+    if (!input.files.length) return;
+
+    const file = input.files[0];
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    try {
+
+        const response = await fetch("/upload", {
+
+            method: "POST",
+
+            body: formData
+
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+
+            alert(result.message);
+
+            return;
+
+        }
+
+        console.log("✅ File uploaded:", result.file);
+
+        alert("File uploaded successfully!");
+
+        // Clear input so the same file can be selected again
+
+        // Send the uploaded file as a chat message
+await fetch("/messages/send", {
+
+    method: "POST",
+
+    headers: {
+        "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+
+        receiver_id: selectedEmployee,
+
+        file_name: result.file.originalName,
+
+        file_path: result.file.path,
+
+        file_type: result.file.mimetype
+
+    })
+
+});
+
+// Refresh the conversation
+await loadConversation(selectedEmployee);
+
+alert("File sent successfully!");
+
+        input.value = "";
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("File upload failed.");
+
+    }
 
 }
