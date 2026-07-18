@@ -907,3 +907,268 @@ alert("File sent successfully!");
     }
 
 }
+// =========================================
+// Admin Panel
+// =========================================
+
+function toggleAdminPanel(show) {
+
+    const panel = document.getElementById("adminPanel");
+
+    panel.style.display = show ? "block" : "none";
+
+    if (show) {
+
+        loadUsers();
+
+    }
+
+}
+
+// =========================================
+// Load Users into Admin Panel
+// =========================================
+
+async function loadUsers() {
+
+    try {
+
+        const response = await fetch("/users");
+
+        const users = await response.json();
+
+        const table = document.getElementById("adminUserTable");
+
+        table.innerHTML = "";
+
+        users.forEach(user => {
+
+            table.innerHTML += `
+                <tr>
+
+                    <td>${user.full_name}</td>
+
+                    <td>${user.username}</td>
+
+                    <td>${user.role}</td>
+
+                    <td>
+
+                        <button
+                            class="btn btn-sm btn-warning">
+
+                            Edit
+
+                        </button>
+
+                        <button
+    class="btn btn-sm btn-danger"
+    onclick="deleteUser(${user.id}, '${user.username}')">
+
+    Delete
+
+</button>
+
+                    </td>
+
+                </tr>
+            `;
+
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+// =========================================
+// Delete User
+// =========================================
+
+async function deleteUser(id, username) {
+
+    if (!confirm(`Delete ${username}?`)) return;
+
+    try {
+
+        const response = await fetch(`/users/${id}`, {
+
+            method: "DELETE"
+
+        });
+
+        const result = await response.json();
+
+       if (result.success) {
+
+    alert("✅ User deleted successfully.");
+
+    loadUsers();
+    loadEmployees();
+
+} else {
+
+    alert(result.message);
+
+}
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Delete failed.");
+
+    }
+
+}
+
+// =========================================
+// Admin Tabs
+// =========================================
+
+function showAdminTab(tab) {
+
+    document.getElementById("adminUsersTab").style.display = "none";
+    document.getElementById("adminMessagesTab").style.display = "none";
+    document.getElementById("adminGroupsTab").style.display = "none";
+    document.getElementById("adminSystemTab").style.display = "none";
+
+    switch(tab){
+
+        case "users":
+            document.getElementById("adminUsersTab").style.display = "block";
+            break;
+
+        case "messages":
+
+    document.getElementById("adminMessagesTab").style.display = "block";
+
+    loadAdminMessageUsers();
+
+    break;
+
+        case "groups":
+            document.getElementById("adminGroupsTab").style.display = "block";
+            break;
+
+        case "system":
+            document.getElementById("adminSystemTab").style.display = "block";
+            break;
+
+    }
+
+}
+// =========================================
+// Load Admin Message Users
+// =========================================
+
+async function loadAdminMessageUsers() {
+
+    try {
+
+        const response = await fetch("/users/all");
+
+        const result = await response.json();
+
+        const user1 = document.getElementById("adminUser1");
+        const user2 = document.getElementById("adminUser2");
+
+        user1.innerHTML = "";
+        user2.innerHTML = "";
+
+        result.forEach(user => {
+
+            user1.innerHTML += `
+                <option value="${user.id}">
+                    ${user.full_name}
+                </option>
+            `;
+
+            user2.innerHTML += `
+                <option value="${user.id}">
+                    ${user.full_name}
+                </option>
+            `;
+
+        });
+
+    } catch (err) {
+
+        console.error("Failed to load admin users:", err);
+
+    }
+
+}
+// =========================================
+// Load Admin Conversation
+// =========================================
+
+async function loadAdminConversation() {
+
+    const user1 = document.getElementById("adminUser1").value;
+    const user2 = document.getElementById("adminUser2").value;
+
+    try {
+
+        const response = await fetch(
+            `/admin/messages/${user1}/${user2}`
+        );
+
+        const result = await response.json();
+
+        const div =
+            document.getElementById("adminConversation");
+
+        div.innerHTML = "";
+
+        result.messages.forEach(msg => {
+
+            div.innerHTML += `
+
+                <div
+                    style="
+                        border:1px solid #ddd;
+                        margin-bottom:10px;
+                        padding:10px;
+                        border-radius:8px;">
+
+                    <strong>
+                        User ${msg.sender_id}
+                    </strong>
+
+                    <br><br>
+
+                    ${msg.message || ""}
+
+                    ${
+                        msg.file_path
+                        ? `<br><br>
+                           <img
+                              src="${msg.file_path}"
+                              style="max-width:180px;">`
+                        : ""
+                    }
+
+                    <br><br>
+
+                    <small>
+
+                        ${msg.created_at}
+
+                    </small>
+
+                </div>
+
+            `;
+
+        });
+
+    } catch(err){
+
+        console.error(err);
+
+    }
+
+}

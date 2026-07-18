@@ -266,9 +266,197 @@ href="/css/dashboard.css">
 </div>
 <script src="/socket.io/socket.io.js"></script>
 
+<!-- ========================= -->
+<!-- Admin Panel -->
+<!-- ========================= -->
+
+<div id="adminPanel"
+     style="display:none;
+            position:fixed;
+            top:0;
+            right:0;
+            width:420px;
+            height:100%;
+            background:white;
+            box-shadow:-4px 0 10px rgba(0,0,0,.2);
+            z-index:9999;
+            overflow:auto;
+            padding:20px;">
+
+    <h3>🛠 Admin Controls</h3>
+
+    <hr>
+
+    <button
+        class="btn btn-secondary"
+        onclick="toggleAdminPanel(false)">
+        Close
+    </button>
+
+    <hr>
+
+    <!-- Admin Navigation -->
+
+<div class="btn-group w-100 mb-3">
+
+    <button
+        class="btn btn-primary"
+        onclick="showAdminTab('users')">
+
+        👥 Users
+
+    </button>
+
+    <button
+        class="btn btn-primary"
+        onclick="showAdminTab('messages')">
+
+        💬 Messages
+
+    </button>
+
+    <button
+        class="btn btn-primary"
+        onclick="showAdminTab('groups')">
+
+        👥 Groups
+
+    </button>
+
+    <button
+        class="btn btn-primary"
+        onclick="showAdminTab('system')">
+
+        ⚙ System
+
+    </button>
+
+</div>
+
+<!-- Users Tab -->
+
+<div id="adminUsersTab">
+
+    <div class="mb-3">
+
+        <input
+            type="text"
+            id="adminSearch"
+            class="form-control"
+            placeholder="Search user...">
+
+    </div>
+
+    <table class="table table-striped">
+
+        <thead>
+
+            <tr>
+
+                <th>Name</th>
+
+                <th>Username</th>
+
+                <th>Role</th>
+
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="adminUserTable">
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<!-- Messages Tab -->
+
+<div id="adminMessagesTab" style="display:none;">
+
+    <h5>💬 Admin Message Center</h5>
+
+    <div class="mb-2">
+
+        <label>User 1</label>
+
+        <select
+            id="adminUser1"
+            class="form-control">
+
+        </select>
+
+    </div>
+
+    <div class="mb-2">
+
+        <label>User 2</label>
+
+        <select
+            id="adminUser2"
+            class="form-control">
+
+        </select>
+
+    </div>
+
+    <button
+        class="btn btn-primary w-100"
+        onclick="loadAdminConversation()">
+
+        Load Conversation
+
+    </button>
+
+    <hr>
+
+    <div
+        id="adminConversation"
+        style="
+            height:350px;
+            overflow:auto;
+            border:1px solid #ddd;
+            padding:10px;
+            background:#fafafa;">
+
+    </div>
+
+</div>
+
+<!-- Groups Tab -->
+
+<div
+    id="adminGroupsTab"
+    style="display:none;">
+
+    <h5>👥 Group Manager</h5>
+
+    <p>Coming soon...</p>
+
+</div>
+
+<!-- System Tab -->
+
+<div
+    id="adminSystemTab"
+    style="display:none;">
+
+    <h5>⚙ System Information</h5>
+
+    <p>Coming soon...</p>
+
+</div>
+
+</div>
+
 <script src="/js/dashboard.js"></script>
 
 <script src="/js/groups.js"></script>
+
+
 
 </body>
 </html>

@@ -174,6 +174,10 @@ exports.updatePassword = (req, res) => {
 
 };
 
+console.log(
+    db.prepare("PRAGMA foreign_key_check").all()
+);
+
 exports.deleteUserByUsername = (req, res) => {
 
     if (!req.session.user) {
@@ -199,6 +203,7 @@ exports.deleteUserByUsername = (req, res) => {
         });
     }
 
+    
     const result = db.prepare(
         "DELETE FROM users WHERE username=?"
     ).run(username);
@@ -323,7 +328,6 @@ exports.updateUser = (req, res) => {
 
 };
 
-// Delete User
 exports.deleteUser = (req, res) => {
 
     if (!req.session.user) {
@@ -343,24 +347,85 @@ exports.deleteUser = (req, res) => {
         });
     }
 
-    const result = db.prepare(
-        "DELETE FROM users WHERE id=?"
-    ).run(id);
+    // <<< REPLACE EVERYTHING FROM HERE >>>
 
-    if(result.changes){
+    try {
 
-        res.json({
-            success:true,
-            message:"User deleted successfully."
-        });
+    console.log("Deleting messages...");
+    db.prepare(`
+        DELETE FROM messages
+        WHERE sender_id = ?
+           OR receiver_id = ?
+    `).run(id, id);
 
-    }else{
+    console.log("Deleting group members...");
+    db.prepare(`
+        DELETE FROM group_members
+        WHERE user_id = ?
+    `).run(id);
 
-        res.json({
-            success:false,
-            message:"User not found."
+    console.log("Deleting group messages...");
+    db.prepare(`
+        DELETE FROM group_messages
+        WHERE sender_id = ?
+    `).run(id);
+
+    console.log("Deleting groups...");
+    db.prepare(`
+        DELETE FROM groups
+        WHERE created_by = ?
+    `).run(id);
+
+    console.log("Deleting announcements...");
+    db.prepare(`
+        DELETE FROM announcements
+        WHERE created_by = ?
+    `).run(id);
+
+    console.log("Deleting chat group members...");
+    db.prepare(`
+        DELETE FROM chat_group_members
+        WHERE user_id = ?
+    `).run(id);
+
+    console.log("Deleting chat groups...");
+    db.prepare(`
+        DELETE FROM chat_groups
+        WHERE created_by = ?
+    `).run(id);
+
+    console.log("Deleting user...");
+    const result = db.prepare(`
+        DELETE FROM users
+        WHERE id = ?
+    `).run(id);
+
+    console.log("Finished");
+
+    if (result.changes) {
+
+        return res.json({
+            success: true,
+            message: "User deleted successfully."
         });
 
     }
+
+    return res.json({
+        success: false,
+        message: "User not found."
+    });
+
+} catch (err) {
+
+    console.error("FAILED HERE:");
+    console.error(err);
+
+    return res.status(500).json({
+        success: false,
+        message: err.message
+    });
+
+}
 
 };

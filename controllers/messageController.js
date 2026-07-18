@@ -177,3 +177,92 @@ exports.markAsRead = (req, res) => {
     });
 
 };
+
+// =========================================
+// Admin - View Any Conversation
+// =========================================
+
+exports.adminConversation = (req, res) => {
+
+    if (!req.session.user) {
+
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized"
+        });
+
+    }
+
+    if (req.session.user.role !== "Admin") {
+
+        return res.status(403).json({
+            success: false,
+            message: "Admins only."
+        });
+
+    }
+
+    const user1 = req.params.user1;
+    const user2 = req.params.user2;
+
+    const messages = db.prepare(`
+        SELECT *
+        FROM messages
+        WHERE
+        (
+            (sender_id=? AND receiver_id=?)
+            OR
+            (sender_id=? AND receiver_id=?)
+        )
+        ORDER BY created_at ASC
+    `).all(
+        user1,
+        user2,
+        user2,
+        user1
+    );
+
+    res.json({
+        success: true,
+        messages
+    });
+
+};
+
+// =========================================
+// Admin Delete Message
+// =========================================
+
+exports.adminDeleteMessage = (req, res) => {
+
+    if (!req.session.user) {
+
+        return res.status(401).json({
+            success: false
+        });
+
+    }
+
+    if (req.session.user.role !== "Admin") {
+
+        return res.status(403).json({
+            success: false,
+            message: "Admins only."
+        });
+
+    }
+
+    const id = req.params.id;
+
+    const result = db.prepare(`
+        DELETE FROM messages
+        WHERE id = ?
+    `).run(id);
+
+    res.json({
+
+        success: result.changes > 0
+
+    });
+
+};
