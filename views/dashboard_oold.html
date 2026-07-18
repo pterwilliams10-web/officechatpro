@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OfficeChat Pro</title>
+
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <h2>OfficeChat</h2>
+            <span>PRO</span>
+        </div>
+
+        <!-- FIXED: Single set of Navigation Buttons -->
+        <nav class="nav-menu">
+            <button id="navChats" class="nav-item active" onclick="switchTab('chats')">
+                💬 Chats
+            </button>
+
+            <button id="navEmployees" class="nav-item" onclick="switchTab('employees')">
+                👥 Employees
+            </button>
+<button
+    id="newGroupBtn"
+    class="nav-item"
+    onclick="openCreateGroupModal()">
+
+    👥 New Group
+
+</button>
+
+<div id="groupSection">
+
+    <h4 style="padding:10px;">👥 Groups</h4>
+
+    <ul id="groupList" class="employee-list">
+
+    </ul>
+
+</div>
+
+            <button id="adminNavBtn" class="nav-item" style="display:none;" onclick="toggleAdminPanel(true)">
+    🛠️ Admin Controls
+</button>
+
+            <button id="navSettings" class="nav-item" onclick="switchTab('settings')">
+                ⚙ Settings
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div id="userinfo" class="user-info">
+                Loading...
+            </div>
+            <button id="logoutBtn" class="logout-btn">
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Employee Panel -->
+    <section class="employee-panel">
+        <div class="panel-header">
+            <input type="text" id="searchInput" placeholder="Search employee...">
+        </div>
+
+        <!-- Global Broadcast Button -->
+        <ul class="employee-list" style="border-bottom: 2px dashed #e5e7eb; margin-bottom: 5px; flex: none;" id="broadcastTab">
+            <li class="list-group-item" onclick="selectBroadcastMode(this)">
+                📢 <strong>Broadcast Announcement</strong>
+            </li>
+        </ul>
+
+        <ul id="employeeList" class="employee-list">
+            <!-- Dynamic users here -->
+        </ul>
+    </section>
+
+
+    <!-- Chat Area -->
+    <main class="chat-area">
+        <div class="chat-header">
+
+    <div class="chat-user">
+
+        <div class="avatar">👤</div>
+
+        <div>
+          <div class="chat-header">
+
+    <div class="chat-user">
+
+        <div class="avatar">👤</div>
+
+        <div>
+
+            <h3 id="chatTitle">Select Employee</h3>
+
+            <small id="userStatus">Offline</small>
+
+        </div>
+
+    </div>
+
+    <button
+        id="manageGroupBtn"
+        class="btn btn-warning"
+        style="display:none;"
+        onclick="openManageGroup()">
+
+        ⚙ Manage Group
+
+    </button>
+
+</div>
+
+        
+       <!-- ... inside .chat-input-area ... -->
+        <div class="chat-input-area">
+            <button class="tool-btn">😊</button>
+
+            <!-- Consolidated File Input -->
+            <input type="file" id="fileAttachmentInput" style="display:none" onchange="handleFileSelected(this)">
+            <button class="tool-btn" onclick="triggerFileUpload()">📎</button>
+
+            <input type="text" id="messageBox" placeholder="Type a message...">
+            <button id="sendBtn" class="send-btn">Send</button>
+        </div>
+
+
+<!-- Admin Management Panel Overlay -->
+<div id="adminPanelModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; justify-content: center; align-items: center;">
+    <div style="background: white; width: 500px; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-height: 85vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #edf2f7; padding-bottom: 10px;">
+            <h2 style="color: #1e293b;">🛠️ System Admin Controls</h2>
+            <button onclick="toggleAdminPanel(false)" style="background: none; border: none; font-size: 20px; cursor: pointer;">❌</button>
+        </div>
+
+        <!-- Section 1: Add User (MATCHES 111_3.PNG) -->
+        <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #edf2f7;">
+            <h3 style="font-size: 16px; margin-bottom: 10px; color: #2563eb;">➕ Add New Employee</h3>
+            <input type="text" id="adminAddName" placeholder="Full Name" style="width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+            <!-- ADDED USERNAME FIELD -->
+            <input type="text" id="adminAddUsername" placeholder="Username" style="width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+            <input type="password" id="adminAddPassword" placeholder="Password" style="width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+            <input type="text" id="adminAddRole" placeholder="Role (e.g., Employee, admin)" value="Employee" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #d1d5db; border-radius: 6px;">
+            <button onclick="adminAddUser()" style="width: 100%; padding: 10px; background: #198754; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Create User</button>
+       <hr>
+
+<hr>
+
+<h4>📜 Message History (Last 60 Days)</h4>
+
+<div class="mb-3">
+    <input
+        type="text"
+        id="historySearch"
+        class="form-control"
+        placeholder="🔍 Search messages..."
+        onkeyup="filterHistory()">
+</div>
+
+<div style="max-height:300px;overflow-y:auto;">
+
+<table class="table table-bordered table-striped">
+
+<thead class="table-dark">
+
+<tr>
+    <th>Date</th>
+    <th>From</th>
+    <th>To</th>
+    <th>Last Message</th>
+    <th>Conversation</th>
+</tr>
+
+</thead>
+
+<tbody id="historyTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+<button
+class="btn btn-primary mt-2"
+onclick="loadMessageHistory()">
+
+Refresh History
+
+</button>
+       
+        </div>
+
+        <hr>
+
+<hr>
+
+<h4>📢 Broadcast Center</h4>
+
+<textarea
+    id="broadcastMessage"
+    class="form-control mb-2"
+    rows="3"
+    placeholder="Write a company announcement..."></textarea>
+
+<button
+    class="btn btn-primary w-100 mb-2"
+    onclick="sendBroadcast()">
+    📢 Send Broadcast
+</button>
+
+<button
+    class="btn btn-secondary w-100 mb-2"
+    onclick="loadBroadcastHistory()">
+    🔄 Refresh History
+</button>
+
+<div
+    id="broadcastHistory"
+    style="
+        max-height:300px;
+        overflow:auto;
+        border:1px solid #ddd;
+        padding:10px;
+        border-radius:8px;">
+</div>
+
+<hr>
+
+        <!-- ===========================
+     Employee Management
+=========================== -->
+
+<div class="card mt-4" id="employeeManagementCard">
+
+    <div class="card-header bg-dark text-white">
+        👥 Employee Management
+    </div>
+
+    <div class="card-body">
+
+        <input
+            type="text"
+            id="employeeSearch"
+            class="form-control mb-3"
+            placeholder="Search employee...">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th width="180">Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="employeeManagementTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<hr>
+
+<h4>📊 Reports</h4>
+
+<button class="btn btn-info w-100 mb-2">
+    Employee Activity
+</button>
+
+<button class="btn btn-info w-100 mb-2">
+    Chat Statistics
+</button>
+
+<button class="btn btn-info w-100">
+    Export Report
+</button>
+
+<hr>
+        <!-- Section 2: Manage Existing Users (For Password updates) -->
+        <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #edf2f7;">
+            <h3 style="font-size: 16px; margin-bottom: 10px; color: #475569;">🔑 Update Password</h3>
+            <input type="text" id="adminTargetUsername" placeholder="Target Username" style="width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+            <input type="password" id="adminNewPassword" placeholder="New Password" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #d1d5db; border-radius: 6px;">
+            <button onclick="adminChangePassword()" style="width: 100%; padding: 10px; background: #475569; color: white; border: none; border-radius: 6px; cursor: pointer;">Update Password</button>
+        </div>
+
+        <!-- Section 3: Delete User -->
+        <div>
+            <h3 style="font-size: 16px; margin-bottom: 10px; color: #dc2626;">🚨 Remove User</h3>
+            <input type="text" id="adminDeleteUsername" placeholder="Username to Delete" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #d1d5db; border-radius: 6px;">
+            <button onclick="adminRemoveUser()" style="width: 100%; padding: 10px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Delete Account</button>
+        </div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script src="/js/groups.js"></script>
+
+<script src="/js/dashboard.js"></script>
+
+<div id="createGroupModal"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.45);
+justify-content:center;
+align-items:center;
+z-index:9999;">
+
+<div
+style="
+background:white;
+width:500px;
+padding:25px;
+border-radius:12px;">
+
+<h2>Create Group</h2>
+
+<input
+id="createGroupName"
+class="form-control"
+placeholder="Group Name">
+
+<br>
+
+<textarea
+id="createGroupDescription"
+class="form-control"
+placeholder="Description"></textarea>
+
+<br>
+
+<h5>Select Members</h5>
+
+<div
+id="createGroupMembersList"
+style="
+height:220px;
+overflow:auto;
+border:1px solid #ddd;
+padding:10px;">
+
+Loading...
+
+</div>
+
+<br>
+
+<button
+class="btn btn-success"
+onclick="createGroup()">
+
+Create Group
+
+</button>
+
+<button
+class="btn btn-secondary"
+onclick="closeCreateGroupModal()">
+
+Cancel
+
+</button>
+
+</div>
+
+</div>
+
+<hr>
+
+
+<div class="mb-3">
+
+    <input
+        type="text"
+        id="historySearch"
+        class="form-control"
+        placeholder="🔍 Search by employee or message..."
+        onkeyup="filterHistory()">
+
+</div>
+
+<h4>🕒 Message History</h4>
+
+<input
+    
+<div
+    id="messageHistory"
+    style="
+        max-height:500px;
+        overflow-y:auto;
+        border:1px solid #ddd;
+        padding:10px;
+        background:white;
+    ">
+</div>
+
+
+<div id="manageGroupModal" class="modal">
+
+<div class="modal-content">
+
+<h3 class="mb-4">⚙️ Manage Group</h3>
+
+<div class="mb-3">
+    <label class="form-label">Group Name</label>
+
+    <input
+        id="editGroupName"
+        class="form-control">
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Description</label>
+
+    <textarea
+        id="editGroupDescription"
+        class="form-control"
+        rows="3"></textarea>
+</div>
+
+<div class="mb-3">
+
+    <label class="form-label">
+
+        Members
+
+    </label>
+
+    <div class="input-group">
+
+        <select
+            id="addMemberSelect"
+            class="form-select">
+
+            <option>Select Employee</option>
+
+        </select>
+
+        <button
+            class="btn btn-primary"
+            onclick="addMemberToGroup()">
+
+            ➕ Add
+
+        </button>
+
+    </div>
+
+</div>
+
+<div
+    id="groupMembersList"
+    class="mb-4">
+</div>
+
+<div class="text-end">
+
+    <button
+        class="btn btn-success"
+        onclick="saveGroupChanges()">
+
+        💾 Save
+
+    </button>
+
+    <button
+        class="btn btn-danger"
+        onclick="deleteCurrentGroup()">
+
+        🗑 Delete
+
+    </button>
+
+    <button
+        class="btn btn-secondary"
+        onclick="closeManageGroup()">
+
+        Close
+
+    </button>
+
+</div>

@@ -70,7 +70,11 @@ if (!message && !file_path) {
     });
 }
 
-    db.prepare(`
+   const created_at = new Date()
+    .toLocaleString("sv-SE")
+    .replace(" ", " ");
+
+db.prepare(`
 INSERT INTO messages
 (
     sender_id,
@@ -79,10 +83,11 @@ INSERT INTO messages
     file_name,
     file_path,
     file_type,
+    created_at,
     expires_at
 )
 VALUES
-(?, ?, ?, ?, ?, ?, ?)
+(?, ?, ?, ?, ?, ?, ?, ?)
 `).run(
     sender_id,
     receiver_id,
@@ -90,6 +95,7 @@ VALUES
     file_name || null,
     file_path || null,
     file_type || null,
+    created_at,
     expires_at
 );
 

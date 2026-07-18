@@ -7,7 +7,6 @@ let currentGroup = null;
 async function openGroup(groupId, groupName, element){
 
     currentGroup = groupId;
-    document.getElementById("manageGroupBtn").style.display = "block";
 
     // Remove active class from all sidebar items
     document
@@ -21,7 +20,6 @@ async function openGroup(groupId, groupName, element){
 
     document.getElementById("chatTitle").innerText =
         "👥 " + groupName;
-document.getElementById("manageGroupBtn").style.display = "block";
 
     await loadGroupMessages();
 
@@ -46,15 +44,13 @@ let html = "";
     result.messages.forEach(msg=>{
 
     html += `
-<div class="chat-bubble">
+<div class="message">
 
-    <div class="sender">
-        ${msg.full_name}
-    </div>
+    <strong>${msg.full_name}</strong>
 
-    <div class="text">
-        ${msg.message}
-    </div>
+    <br>
+
+    ${msg.message ?? ""}
 
 </div>
 `;
@@ -142,8 +138,6 @@ async function deleteCurrentGroup(){
 
         currentGroup = null;
 
-        document.getElementById("manageGroupBtn").style.display = "none";
-
         document.getElementById("chatTitle").innerText =
             "OfficeChat Pro";
 
@@ -209,11 +203,7 @@ async function openManageGroup(){
 
     const result = await response.json();
 
-    console.log("Group:", result.group);
-console.log("Members:", result.members);
-
-
-if(!result.success){
+    if(!result.success){
 
         alert(result.message);
 
@@ -221,7 +211,58 @@ if(!result.success){
 
     }
 
+async function addMemberToGroup(){
 
+    if(!currentGroup){
+
+        alert("Please select a group first.");
+
+        return;
+
+    }
+
+    const userId =
+        document.getElementById("addMemberSelect").value;
+
+    if(userId === ""){
+
+        alert("Please select an employee.");
+
+        return;
+
+    }
+
+    const response =
+        await fetch("/groups/add-member",{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+                group_id:currentGroup,
+
+                user_id:userId
+
+            })
+
+        });
+
+    const result =
+        await response.json();
+
+    alert(result.message);
+
+    if(result.success){
+
+        openManageGroup();
+
+    }
+
+}
 
     document.getElementById("editGroupName").value =
         result.group.name;
@@ -261,23 +302,21 @@ document.getElementById("addMemberSelect").innerHTML = options;
 
     result.members.forEach(member=>{
 
-       html += `
+        html += `
 <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
 
-    <div>
+    <span>
 
-        👤 <strong>${member.full_name}</strong>
+        👤 ${member.full_name}
 
-        <span class="text-muted">
-
+        <small class="text-muted">
             (${member.role})
+        </small>
 
-        </span>
-
-    </div>
+    </span>
 
     <button
-        class="btn btn-outline-danger btn-sm"
+        class="btn btn-danger btn-sm"
         onclick="removeMember(${member.id})">
 
         Remove
@@ -292,64 +331,5 @@ document.getElementById("addMemberSelect").innerHTML = options;
     document.getElementById("groupMembersList").innerHTML = html;
 
     document.getElementById("manageGroupModal").style.display = "block";
-
-}
-
-async function addMemberToGroup(){
-
-    if(!currentGroup){
-
-        alert("Please select a group first.");
-
-        return;
-
-    }
-
-    const userId =
-        document.getElementById("addMemberSelect").value;
-
-    if(userId === ""){
-
-        alert("Please select an employee.");
-        document.getElementById("manageGroupBtn").style.display = "none";
-
-        return;
-
-    }
-
-    const response =
-        await fetch("/groups/add-member",{
-
-            method:"POST",
-
-            headers:{
-                "Content-Type":"application/json"
-            },
-
-            body:JSON.stringify({
-
-                group_id:currentGroup,
-
-                user_id:userId
-
-            })
-
-        });
-
-    const result =
-        await response.json();
-
-    alert(result.message);
-
-    if(result.success){
-
-        openManageGroup();
-
-    }
-
-}
-function closeManageGroup(){
-
-    document.getElementById("manageGroupModal").style.display = "none";
 
 }

@@ -6,7 +6,12 @@ const path = require("path");
 // Storage configuration
 const fs = require("fs");
 
-const uploadFolder = path.join(__dirname, "..", "uploads");
+const uploadFolder = path.join(
+    __dirname,
+    "..",
+    "public",
+    "uploads"
+);
 
 if (!fs.existsSync(uploadFolder)) {
     fs.mkdirSync(uploadFolder, { recursive: true });

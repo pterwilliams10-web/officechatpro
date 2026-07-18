@@ -13,4 +13,25 @@ router.get(
     groupController.getGroups
 );
 
+router.delete(
+    "/groups/:id",
+    groupController.deleteGroup
+);
+
+router.put(
+    "/groups/:id",
+    groupController.renameGroup
+);
+
+router.get(
+    "/groups/:id",
+    groupController.getGroupDetails
+);
+
+router.post(
+    "/groups/add-member",
+    groupController.addMember
+);
+
+
 module.exports = router;

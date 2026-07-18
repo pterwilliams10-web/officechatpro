@@ -1,6 +1,30 @@
 const db = require("../config/database");
 const bcrypt = require("bcrypt");
 
+// ======================================
+// Current Logged In User
+// ======================================
+
+exports.getCurrentUser = (req, res) => {
+
+    if (!req.session.user) {
+
+        return res.status(401).json({
+            success: false
+        });
+
+    }
+
+    res.json({
+
+        success: true,
+
+        user: req.session.user
+
+    });
+
+};
+
 // Get all users except the logged-in user
 exports.getUsers = (req, res) => {
 
@@ -25,7 +49,7 @@ exports.getUsers = (req, res) => {
     res.json(users);
 
 };
-onclick="editEmployee(${user.id}, '${user.full_name}', '${user.role}')"
+
 // Create new user
 exports.createUser = (req, res) => {
 

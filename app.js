@@ -114,14 +114,82 @@ io.on("connection", (socket) => {
     }
 
 });
-    socket.on("send_message", (data) => {
+socket.on("send_message", (data) => {
 
-    console.log("📩 Message received:", data);
+    console.log("📩 Private Message:", data);
 
-    // broadcast to all users
-    socket.broadcast.emit("receive_message", data);
+    // Find the recipient's socket
+    const receiverSocketId = onlineUsers.get(data.receiver_id);
+
+    // Send only to the recipient if they're online
+    if (receiverSocketId) {
+        io.to(receiverSocketId).emit("receive_message", data);
+    }
+
+    // Also send back to the sender so both clients stay synchronized
+    socket.emit("receive_message", data);
 
 });
+
+// =========================================
+// Typing Indicator
+// =========================================
+
+socket.on("typing", (data) => {
+
+    const receiverSocketId = onlineUsers.get(data.receiver_id);
+
+    if (receiverSocketId) {
+
+        io.to(receiverSocketId).emit("user_typing", {
+
+            sender_id: data.sender_id,
+
+            sender_name: data.sender_name
+
+        });
+
+    }
+
+});
+
+socket.on("stop_typing", (data) => {
+
+    const receiverSocketId = onlineUsers.get(data.receiver_id);
+
+    if (receiverSocketId) {
+
+        io.to(receiverSocketId).emit("user_stop_typing", {
+
+            sender_id: data.sender_id
+
+            
+
+        });
+
+    }
+    // =========================================
+// Read Receipt
+// =========================================
+
+socket.on("message_read", (data) => {
+
+    const senderSocketId = onlineUsers.get(data.sender_id);
+
+    if (senderSocketId) {
+
+        io.to(senderSocketId).emit("message_read", {
+            reader_id: data.reader_id
+        });
+
+    }
+
+});
+
+    
+
+});
+   
 
 // Inside your io.on("connection", (socket) => { ... }) block:
 socket.on("broadcast_message", (data) => {

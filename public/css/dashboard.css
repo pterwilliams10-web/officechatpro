@@ -336,3 +336,276 @@ body{
 .employee-list li:hover{
     transform:translateX(5px);
 }
+
+.modal{
+    display:none;
+    position:fixed;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.5);
+    z-index:9999;
+}
+
+.modal-content{
+    background:#fff;
+    width:600px;
+    max-width:90%;
+    margin:60px auto;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+
+/* ==========================================
+   Professional Employee Cards
+========================================== */
+
+.employee-card{
+
+    display:flex;
+    align-items:center;
+
+    gap:12px;
+
+    padding:14px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    border-bottom:1px solid #ececec;
+
+    background:#fff;
+
+}
+
+.employee-card:hover{
+
+    background:#f5f8ff;
+
+}
+
+.employee-card.active{
+
+    background:#dbeafe;
+
+}
+
+.employee-avatar{
+
+    width:48px;
+
+    height:48px;
+
+    border-radius:50%;
+
+    background:#2563eb;
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:20px;
+
+    flex-shrink:0;
+
+}
+
+.employee-info{
+
+    flex:1;
+
+}
+
+.employee-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.employee-name{
+
+    font-weight:600;
+
+    color:#222;
+
+}
+
+.employee-time{
+
+    font-size:12px;
+
+    color:#888;
+
+}
+
+.employee-bottom{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-top:6px;
+
+}
+
+.last-message{
+
+    font-size:13px;
+
+    color:#777;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    text-overflow:ellipsis;
+
+    max-width:180px;
+
+}
+
+.unread-badge{
+
+    background:#ef4444;
+
+    color:white;
+
+    min-width:22px;
+
+    height:22px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+}
+/* ==========================================
+   OfficeChat Pro V2 Chat Bubbles
+========================================== */
+
+.chat-messages{
+    display:flex;
+    flex-direction:column;
+    padding:20px;
+    gap:12px;
+    overflow-y:auto;
+}
+
+.message{
+    max-width:70%;
+    padding:12px 16px;
+    border-radius:18px;
+    background:#ffffff;
+    border:1px solid #e5e7eb;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+    animation:fadeIn .2s ease;
+}
+
+.message.mine{
+    align-self:flex-end;
+    background:#2563eb;
+    color:#fff;
+    border:none;
+}
+
+.message-content{
+    word-wrap:break-word;
+    white-space:pre-wrap;
+}
+
+.message-time{
+    display:block;
+    margin-top:6px;
+    font-size:11px;
+    opacity:.75;
+    text-align:right;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(8px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+/* Online employee */
+
+.employee-card.online{
+
+    border-left:5px solid #22c55e;
+
+    background:#f0fff4;
+
+}
+/* =========================================
+   Typing Indicator
+========================================= */
+
+.typing-indicator{
+
+    padding:8px 14px;
+
+    color:#777;
+
+    font-style:italic;
+
+    font-size:13px;
+
+}
+/* =========================================
+   Chat Search
+========================================= */
+
+.chat-search{
+
+    margin-left:auto;
+    margin-right:15px;
+
+}
+
+.chat-search input{
+
+    width:220px;
+
+    padding:7px 12px;
+
+    border-radius:20px;
+
+    border:1px solid #ccc;
+
+    outline:none;
+
+    transition:.3s;
+
+}
+
+.chat-search input:focus{
+
+    border-color:#0d6efd;
+
+    box-shadow:0 0 5px rgba(13,110,253,.25);
+
+}
