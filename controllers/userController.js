@@ -295,9 +295,9 @@ exports.updateUser = (req, res) => {
         });
     }
 
-    const { id, full_name, role } = req.body;
+    const { id, full_name, username, role } = req.body;
 
-    if (!id || !full_name || !role) {
+    if (!id || !full_name || !username || !role) {
         return res.json({
             success: false,
             message: "Please fill all fields."
@@ -306,9 +306,18 @@ exports.updateUser = (req, res) => {
 
     const result = db.prepare(`
         UPDATE users
-        SET full_name = ?, role = ?
-        WHERE id = ?
-    `).run(full_name, role, id);
+SET
+    full_name = ?,
+    username = ?,
+    role = ?
+WHERE id = ?
+
+    `).run(
+    full_name,
+    username,
+    role,
+    id
+);
 
     if (result.changes) {
 
@@ -427,5 +436,77 @@ exports.deleteUser = (req, res) => {
     });
 
 }
+
+};
+// =========================================
+// Admin Reset Password
+// =========================================
+
+exports.adminResetPassword = (req, res) => {
+
+    if (!req.session.user) {
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized"
+        });
+    }
+
+    if (req.session.user.role !== "Admin") {
+        return res.status(403).json({
+            success: false,
+            message: "Admins only."
+        });
+    }
+
+    const { id, password } = req.body;
+
+    if (!id || !password) {
+        return res.json({
+            success: false,
+            message: "Missing user ID or password."
+        });
+    }
+
+    if (password.length < 4) {
+        return res.json({
+            success: false,
+            message: "Password must be at least 4 characters."
+        });
+    }
+
+    try {
+
+        const hash = bcrypt.hashSync(password, 10);
+
+        const result = db.prepare(`
+            UPDATE users
+            SET password = ?
+            WHERE id = ?
+        `).run(hash, id);
+
+        if (result.changes > 0) {
+
+            return res.json({
+                success: true,
+                message: "Password updated successfully."
+            });
+
+        }
+
+        return res.json({
+            success: false,
+            message: "User not found."
+        });
+
+    } catch (err) {
+
+        console.error("Admin Reset Password Error:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error."
+        });
+
+    }
 
 };

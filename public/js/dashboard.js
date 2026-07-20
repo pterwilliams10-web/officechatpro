@@ -954,22 +954,40 @@ async function loadUsers() {
 
                     <td>
 
-                        <button
-                            class="btn btn-sm btn-warning">
+<button
+class="btn btn-primary btn-sm"
+onclick="editUser(
+    ${user.id},
+    '${user.full_name}',
+    '${user.username}',
+    '${user.role}'
+)">
 
-                            Edit
-
-                        </button>
-
-                        <button
-    class="btn btn-sm btn-danger"
-    onclick="deleteUser(${user.id}, '${user.username}')">
-
-    Delete
+✏ Edit
 
 </button>
 
-                    </td>
+<br><br>
+
+<button
+class="btn btn-warning btn-sm"
+onclick="resetUserPassword(${user.id},'${user.full_name}')">
+
+🔑 Reset
+
+</button>
+
+<br><br>
+
+<button
+class="btn btn-danger btn-sm"
+onclick="deleteUser(${user.id},'${user.username}')">
+
+🗑 Delete
+
+</button>
+
+</td>
 
                 </tr>
             `;
@@ -1159,6 +1177,16 @@ async function loadAdminConversation() {
 
                     </small>
 
+                    <br><br>
+
+<button
+    class="btn btn-danger btn-sm"
+    onclick="adminDeleteMessage(${msg.id})">
+
+    🗑 Delete Message
+
+</button>
+
                 </div>
 
             `;
@@ -1168,6 +1196,249 @@ async function loadAdminConversation() {
     } catch(err){
 
         console.error(err);
+
+    }
+
+}
+
+// =========================================
+// Admin Delete Message
+// =========================================
+
+async function adminDeleteMessage(messageId) {
+
+    if (!confirm("Delete this message?")) {
+
+        return;
+
+    }
+
+    try {
+
+        const response = await fetch(
+
+            `/admin/message/${messageId}`,
+
+            {
+
+                method: "DELETE"
+
+            }
+
+        );
+
+        const result = await response.json();
+
+        if (result.success) {
+
+            alert("✅ Message deleted successfully.");
+
+            loadAdminConversation();
+
+        } else {
+
+            alert(result.message || "Delete failed.");
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Delete failed.");
+
+    }
+
+}
+
+// =========================================
+// Admin Delete Conversation
+// =========================================
+
+async function adminDeleteConversation() {
+
+    const user1 = document.getElementById("adminUser1").value;
+    const user2 = document.getElementById("adminUser2").value;
+
+    if (!confirm("Delete the ENTIRE conversation?")) {
+
+        return;
+
+    }
+
+    try {
+
+        const response = await fetch(
+
+            `/admin/conversation/${user1}/${user2}`,
+
+            {
+
+                method: "DELETE"
+
+            }
+
+        );
+
+        const result = await response.json();
+
+        if (result.success) {
+
+            alert(`✅ ${result.deleted} messages deleted.`);
+
+            document.getElementById("adminConversation").innerHTML = "";
+
+        } else {
+
+            alert("Delete failed.");
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Delete failed.");
+
+    }
+
+}
+
+// =========================================
+// Reset User Password
+// =========================================
+
+async function resetUserPassword(id, name) {
+
+    const password = prompt(
+        `Enter a new password for ${name}:`
+    );
+
+    if (!password) {
+
+        return;
+
+    }
+
+    try {
+
+        const response = await fetch(
+
+            "/admin/reset-password",
+
+            {
+
+                method: "PUT",
+
+                headers: {
+
+                    "Content-Type": "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    id,
+
+                    password
+
+                })
+
+            }
+
+        );
+
+        const result = await response.json();
+
+        if (result.success) {
+
+            alert("✅ Password updated successfully.");
+
+        } else {
+
+            alert(result.message);
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Password update failed.");
+
+    }
+
+}
+// =========================================
+// Edit User
+// =========================================
+
+async function editUser(id, fullName, username, role) {
+
+    const newName = prompt("Full Name:", fullName);
+
+    if (!newName) return;
+
+    const newUsername = prompt("Username:", username);
+
+    if (!newUsername) return;
+
+    const newRole = prompt(
+        "Role (Admin / Employee):",
+        role
+    );
+
+    if (!newRole) return;
+
+    try {
+
+        const response = await fetch(
+
+            "/users/update",
+
+            {
+
+                method: "PUT",
+
+                headers: {
+
+                    "Content-Type": "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    id,
+                    full_name: newName,
+                    username: newUsername,
+                    role: newRole
+
+                })
+
+            }
+
+        );
+
+        const result = await response.json();
+
+        if (result.success) {
+
+            alert("✅ User updated successfully.");
+
+            loadUsers();
+            loadEmployees();
+
+        } else {
+
+            alert(result.message);
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Update failed.");
 
     }
 

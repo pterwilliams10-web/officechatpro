@@ -266,3 +266,51 @@ exports.adminDeleteMessage = (req, res) => {
     });
 
 };
+// =========================================
+// Admin Delete Conversation
+// =========================================
+
+exports.adminDeleteConversation = (req, res) => {
+
+    if (!req.session.user) {
+
+        return res.status(401).json({
+            success: false
+        });
+
+    }
+
+    if (req.session.user.role !== "Admin") {
+
+        return res.status(403).json({
+            success: false,
+            message: "Admins only."
+        });
+
+    }
+
+    const user1 = req.params.user1;
+    const user2 = req.params.user2;
+
+    const result = db.prepare(`
+        DELETE FROM messages
+        WHERE
+        (sender_id=? AND receiver_id=?)
+        OR
+        (sender_id=? AND receiver_id=?)
+    `).run(
+        user1,
+        user2,
+        user2,
+        user1
+    );
+
+    res.json({
+
+        success: true,
+
+        deleted: result.changes
+
+    });
+
+};

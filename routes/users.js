@@ -15,6 +15,11 @@ router.put("/users/password", userController.updatePassword);
 
 router.put("/users/update", userController.updateUser);
 
+router.put(
+    "/admin/reset-password",
+    userController.adminResetPassword
+);
+
 router.delete("/users/delete", userController.deleteUserByUsername);
 
 router.delete("/users/:id", userController.deleteUser);
