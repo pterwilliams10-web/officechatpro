@@ -7,6 +7,7 @@ const databaseFolder = path.join(__dirname, "..");
 const dbPath = path.join(databaseFolder, "officechat.db");
 
 const db = new Database(dbPath);
+console.log("DATABASE PATH:", dbPath);
 
 console.log("SQLite database connected");
 

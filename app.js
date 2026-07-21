@@ -121,6 +121,31 @@ socket.on("send_message", (data) => {
 
     console.log("📩 Private Message:", data);
 
+    // =========================================
+// Join Group
+// =========================================
+
+socket.on("join_group", (groupId) => {
+
+    socket.join("group_" + groupId);
+
+    console.log("👥 Joined Group:", groupId);
+
+});
+
+// =========================================
+// Group Message
+// =========================================
+
+socket.on("group_message", (data) => {
+
+    console.log("👥 Group Message:", data);
+
+    io.to("group_" + data.group_id)
+      .emit("receive_group_message", data);
+
+});
+
     // Find the recipient's socket
     const receiverSocketId = onlineUsers.get(data.receiver_id);
 
@@ -153,6 +178,31 @@ socket.on("typing", (data) => {
         });
 
     }
+
+});
+
+// =========================================
+// Join Group
+// =========================================
+
+socket.on("join_group", (groupId) => {
+
+    socket.join("group_" + groupId);
+
+    console.log("👥 Joined Group:", groupId);
+
+});
+
+// =========================================
+// Real-Time Group Messages
+// =========================================
+
+socket.on("group_message", (data) => {
+
+    console.log("👥 Broadcasting Group Message:", data);
+
+    io.to("group_" + data.group_id)
+      .emit("receive_group_message", data);
 
 });
 

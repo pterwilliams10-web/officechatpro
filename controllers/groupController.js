@@ -200,16 +200,20 @@ exports.getGroupDetails = (req, res) => {
         `).get(groupId);
 
         const members = db.prepare(`
-            SELECT
-                users.id,
-                users.full_name,
-                group_members.role
-            FROM group_members
-            JOIN users
-                ON users.id = group_members.user_id
-            WHERE group_members.group_id = ?
-            ORDER BY users.full_name
-        `).all(groupId);
+    SELECT
+        group_members.id AS group_member_id,
+        group_members.user_id,
+        users.id,
+        users.full_name,
+        group_members.role
+    FROM group_members
+    JOIN users
+        ON users.id = group_members.user_id
+    WHERE group_members.group_id = ?
+    ORDER BY users.full_name
+`).all(groupId);
+
+console.log("GROUP MEMBERS:", members);
 
         res.json({
             success: true,
@@ -283,5 +287,44 @@ exports.addMember = (req, res) => {
     }
 
 };
+// =========================================
+// Remove Member
+// =========================================
 
+exports.removeMember = (req, res) => {
 
+    console.log("REMOVE MEMBER");
+    console.log(req.body);
+
+    const { group_id, user_id } = req.body;
+
+    const before = db.prepare(`
+        SELECT *
+        FROM group_members
+        WHERE group_id = ?
+    `).all(group_id);
+
+    console.log("Before:", before);
+
+    const result = db.prepare(`
+        DELETE FROM group_members
+        WHERE group_id = ?
+        AND user_id = ?
+    `).run(group_id, user_id);
+
+    console.log("Deleted:", result.changes);
+
+    const after = db.prepare(`
+        SELECT *
+        FROM group_members
+        WHERE group_id = ?
+    `).all(group_id);
+
+    console.log("After:", after);
+
+    res.json({
+        success: true,
+        changes: result.changes
+    });
+
+};

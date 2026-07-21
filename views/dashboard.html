@@ -41,25 +41,9 @@ href="/css/dashboard.css">
 
                 💬 Chats
 
-            </button>
+            
 
-            <button
-                id="navEmployees"
-                class="nav-item">
-
-                👥 Employees
-
-            </button>
-
-            <button
-                id="newGroupBtn"
-                class="nav-item"
-                onclick="openCreateGroupModal()">
-
-                👥 New Group
-
-            </button>
-
+            
             <button
                 id="adminNavBtn"
                 class="nav-item"
@@ -68,17 +52,7 @@ href="/css/dashboard.css">
 
                 🛠 Admin Controls
 
-            </button>
-
-            <button
-                id="navSettings"
-                class="nav-item">
-
-                ⚙ Settings
-
-            </button>
-
-        </nav>
+                   </nav>
 
         <div class="sidebar-footer">
 
@@ -434,15 +408,31 @@ href="/css/dashboard.css">
 
 </div>
 
-<!-- Groups Tab -->
+<!-- ========================= -->
+<!-- Admin Groups -->
+<!-- ========================= -->
 
 <div
     id="adminGroupsTab"
     style="display:none;">
 
-    <h5>👥 Group Manager</h5>
+    <h4>👥 Group Manager</h4>
 
-    <p>Coming soon...</p>
+    <hr>
+
+    <button
+        class="btn btn-success mb-3"
+        onclick="showCreateGroupModal()">
+
+        ➕ Create New Group
+
+    </button>
+
+    <div id="adminGroupsList">
+
+        Loading groups...
+
+    </div>
 
 </div>
 
@@ -464,7 +454,158 @@ href="/css/dashboard.css">
 
 <script src="/js/groups.js"></script>
 
+<!-- ========================= -->
+<!-- Create Group Modal -->
+<!-- ========================= -->
+
+<div
+    id="createGroupModal"
+    style="
+        display:none;
+        position:fixed;
+        top:10%;
+        left:50%;
+        transform:translateX(-50%);
+        width:500px;
+        background:white;
+        padding:20px;
+        border-radius:10px;
+        box-shadow:0 0 25px rgba(0,0,0,.4);
+        z-index:9999;">
+
+    <h3>➕ Create New Group</h3>
+
+    <hr>
+
+    <div class="mb-3">
+
+        <label>Group Name</label>
+
+        <input
+            id="newGroupName"
+            class="form-control">
+
+    </div>
+
+    <div class="mb-3">
+
+        <label>Description</label>
+
+        <textarea
+            id="newGroupDescription"
+            class="form-control"></textarea>
+
+    </div>
+
+    <div class="mb-3">
+
+        <label>Select Members</label>
+
+        <div
+            id="groupMembersSelection"
+            style="
+                max-height:200px;
+                overflow:auto;
+                border:1px solid #ddd;
+                padding:10px;">
+
+        </div>
+
+    </div>
+
+    <button
+        class="btn btn-success"
+        onclick="createGroup()">
+
+        Create Group
+
+    </button>
+
+    <button
+        class="btn btn-secondary"
+        onclick="closeCreateGroupModal()">
+
+        Cancel
+
+    </button>
+
+</div>
 
 
+<!-- ========================= -->
+<!-- Group Members Modal -->
+<!-- ========================= -->
+
+<div
+    id="groupMembersModal"
+    style="
+        display:none;
+        position:fixed;
+        top:10%;
+        left:50%;
+        transform:translateX(-50%);
+        width:600px;
+        background:white;
+        padding:20px;
+        border-radius:8px;
+        box-shadow:0 0 20px rgba(0,0,0,.3);
+        z-index:10000;">
+
+    <h3>👥 Group Members</h3>
+
+    <hr>
+
+    <table class="table">
+
+        <thead>
+
+            <tr>
+
+                <th>Name</th>
+
+                <th>Role</th>
+
+                <th>Action</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="groupMembersBody">
+
+        </tbody>
+
+    </table>
+
+<hr>
+
+<h5>➕ Add Member</h5>
+
+<select
+    id="addMemberSelect"
+    class="form-control mb-2">
+
+</select>
+
+<button
+    class="btn btn-success"
+    onclick="addMemberToGroup()">
+
+    Add Member
+
+</button>
+
+<br><br>
+
+
+    <button
+        class="btn btn-secondary"
+        onclick="document.getElementById('groupMembersModal').style.display='none'">
+
+        Close
+
+    </button>
+
+</div>
 </body>
 </html>

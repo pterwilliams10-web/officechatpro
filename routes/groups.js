@@ -13,19 +13,10 @@ router.get(
     groupController.getGroups
 );
 
+// ⭐ Put this FIRST
 router.delete(
-    "/groups/:id",
-    groupController.deleteGroup
-);
-
-router.put(
-    "/groups/:id",
-    groupController.renameGroup
-);
-
-router.get(
-    "/groups/:id",
-    groupController.getGroupDetails
+    "/groups/remove-member",
+    groupController.removeMember
 );
 
 router.post(
@@ -33,5 +24,19 @@ router.post(
     groupController.addMember
 );
 
+router.get(
+    "/groups/:id",
+    groupController.getGroupDetails
+);
+
+router.put(
+    "/groups/:id",
+    groupController.renameGroup
+);
+
+router.delete(
+    "/groups/:id",
+    groupController.deleteGroup
+);
 
 module.exports = router;

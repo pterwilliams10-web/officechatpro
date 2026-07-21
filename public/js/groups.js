@@ -7,6 +7,7 @@ let currentGroup = null;
 async function openGroup(groupId, groupName, element){
 
     currentGroup = groupId;
+    socket.emit("join_group", groupId);
     document.getElementById("manageGroupBtn").style.display = "block";
 
     // Remove active class from all sidebar items
@@ -45,15 +46,29 @@ let html = "";
 
     result.messages.forEach(msg=>{
 
-    html += `
-<div class="chat-bubble">
+    const messageTime = new Date(msg.created_at).toLocaleString();
 
+const mine = msg.sender_id == currentUser.id;
+
+html += `
+<div class="${mine ? 'my-message' : 'their-message'}">
+
+    ${!mine ? `
     <div class="sender">
         ${msg.full_name}
     </div>
+    ` : ""}
 
-    <div class="text">
-        ${msg.message}
+    <div class="chat-bubble ${mine ? 'bubble-me' : 'bubble-them'}">
+
+        <div class="text">
+            ${msg.message}
+        </div>
+
+        <div class="message-time">
+            ${messageTime}
+        </div>
+
     </div>
 
 </div>
@@ -111,9 +126,21 @@ async function sendGroupMessage(){
 
     if(result.success){
 
-        box.value="";
+        socket.emit("group_message", {
 
-        loadGroupMessages();
+    group_id: currentGroup,
+
+    sender_id: currentUser.id,
+
+    sender_name: currentUser.full_name,
+
+    message: message,
+
+    created_at: new Date()
+
+});
+
+box.value = "";
 
     }
 
@@ -261,7 +288,7 @@ document.getElementById("addMemberSelect").innerHTML = options;
 
     result.members.forEach(member=>{
 
-       html += `
+      html += `
 <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
 
     <div>
@@ -269,16 +296,14 @@ document.getElementById("addMemberSelect").innerHTML = options;
         👤 <strong>${member.full_name}</strong>
 
         <span class="text-muted">
-
             (${member.role})
-
         </span>
 
     </div>
 
     <button
         class="btn btn-outline-danger btn-sm"
-        onclick="removeMember(${member.id})">
+        onclick="removeMember(${currentGroup}, ${member.id})">
 
         Remove
 

@@ -16,6 +16,8 @@ if ("Notification" in window) {
 // Online users
 let onlineUsers = [];
 
+
+
 // =========================================
 // Global Variables
 // =========================================
@@ -47,20 +49,25 @@ async function loadGroups() {
         const response = await fetch("/groups");
         const groups = await response.json();
 
-        let html = "";
+        const groupList = document.getElementById("groupList");
+
+        groupList.innerHTML = "";
 
         groups.forEach(group => {
 
-            html += `
-                <li class="list-group-item"
-                    onclick="openGroup(${group.id}, '${group.name.replace(/'/g, "\\'")}')">
-                    👥 ${group.name}
-                </li>
-            `;
+            groupList.innerHTML += `
+
+<li
+    class="list-group-item"
+    onclick="openGroup(${group.id}, '${group.name.replace(/'/g, "\\'")}', this)">
+
+    👥 ${group.name}
+
+</li>
+
+`;
 
         });
-
-        document.getElementById("groupList").innerHTML = html;
 
     } catch (err) {
 
@@ -88,6 +95,13 @@ async function openGroup(id, name) {
 // Send Message
 // =========================================
 async function sendMessage() {
+
+    // If a group is open, send group message instead
+if (currentGroup) {
+
+    return sendGroupMessage();
+
+}
 
     if (!selectedEmployee) {
         alert("Please select an employee first.");
@@ -618,6 +632,22 @@ if (
 });
 
 // =========================================
+// Receive Real-Time Group Message
+// =========================================
+
+socket.on("receive_group_message", (data) => {
+
+    console.log("👥 Incoming Group Message:", data);
+
+    if (currentGroup == data.group_id) {
+
+        loadGroupMessages();
+
+    }
+
+});
+
+// =========================================
 // Update Sidebar Preview
 // =========================================
 function updateSidebarMessage(userId, message) {
@@ -1068,8 +1098,12 @@ function showAdminTab(tab) {
     break;
 
         case "groups":
-            document.getElementById("adminGroupsTab").style.display = "block";
-            break;
+
+    document.getElementById("adminGroupsTab").style.display = "block";
+
+    loadAdminGroups();
+
+    break;
 
         case "system":
             document.getElementById("adminSystemTab").style.display = "block";
@@ -1439,6 +1473,560 @@ async function editUser(id, fullName, username, role) {
         console.error(err);
 
         alert("Update failed.");
+
+    }
+
+}
+// =========================================
+// Load Admin Groups
+// =========================================
+
+async function loadAdminGroups() {
+
+    try {
+
+        const response = await fetch("/groups");
+
+        const groups = await response.json();
+
+        const container = document.getElementById("adminGroupsList");
+
+        container.innerHTML = "";
+
+        groups.forEach(group => {
+
+            container.innerHTML += `
+
+            <div class="card mb-2">
+
+                <div class="card-body">
+
+                    <h5>${group.name}</h5>
+
+                    <p>${group.description || ""}</p>
+
+                    <button
+                        class="btn btn-primary btn-sm"
+                        onclick="viewGroup(${group.id})">
+
+                        👥 Members
+
+                    </button>
+
+                    <button
+                        class="btn btn-warning btn-sm"
+                        onclick="renameGroup(${group.id})">
+
+                        ✏ Rename
+
+                    </button>
+
+                    <button
+                        class="btn btn-danger btn-sm"
+                        onclick="deleteGroup(${group.id})">
+
+                        🗑 Delete
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            `;
+
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+// =========================================
+// View Group Members
+// =========================================
+
+async function viewGroup(groupId) {
+
+    currentGroup = groupId;
+
+    try {
+
+        const response = await fetch(`/groups/${groupId}`);
+
+        const result = await response.json();
+
+        if (!result.success) {
+
+            alert(result.message);
+
+            return;
+
+        }
+
+        let html = "";
+
+        result.members.forEach(member => {
+
+            html += `
+                <tr>
+
+                    <td>${member.full_name}</td>
+
+                    <td>${member.role}</td>
+
+                    <td>
+
+                        <button
+                            class="btn btn-danger btn-sm"
+                            onclick="removeMember(${groupId}, ${member.id})">
+
+                            Remove
+
+                        </button>
+
+                    </td>
+
+                </tr>
+            `;
+
+        });
+
+const usersResponse = await fetch("/users");
+const employees = await usersResponse.json();
+
+let options = `<option value="">Select Employee</option>`;
+
+employees.forEach(user => {
+
+    const exists = result.members.find(
+        member => member.id === user.id
+    );
+
+    if (!exists) {
+
+        options += `
+<option value="${user.id}">
+${user.full_name}
+</option>
+`;
+
+    }
+
+});
+
+document.getElementById("addMemberSelect").innerHTML = options;
+
+
+        document.getElementById("groupMembersBody").innerHTML = html;
+
+        document.getElementById("groupMembersModal").style.display = "block";
+
+    } catch(err){
+
+        console.error(err);
+
+        alert("Unable to load group.");
+
+    }
+
+}
+// =========================================
+// Remove Member
+// =========================================
+
+async function removeMember(groupId, userId) {
+
+    console.log("removeMember() called");
+    console.log("groupId =", groupId);
+    console.log("userId =", userId);
+
+    if (!confirm("Remove this member from the group?")) {
+        return;
+    }
+
+    try {
+
+        console.log("Sending DELETE request...");
+
+        const response = await fetch("/groups/remove-member", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                group_id: groupId,
+                user_id: userId
+            })
+        });
+
+        console.log("HTTP Status:", response.status);
+
+        const result = await response.json();
+
+        console.log("Server Response:", result);
+
+        if (result.success) {
+            alert("✅ Member removed successfully.");
+            await openManageGroup();
+            loadAdminGroups();
+        } else {
+            alert(result.message);
+        }
+
+    } catch (err) {
+        console.error("Fetch Error:", err);
+    }
+}
+
+// =========================================
+// Add Member To Group
+// =========================================
+async function addMemberToGroup() {
+
+    const userId = document.getElementById("addMemberSelect").value;
+
+    if (userId === "") {
+
+        alert("Please select an employee.");
+
+        return;
+
+    }
+
+    try {
+
+        const response = await fetch("/groups/add-member", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                group_id: currentGroup,
+                user_id: parseInt(userId)
+
+            })
+
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+
+            alert("✅ Member added successfully.");
+
+            // Reload the member list
+            await viewGroup(currentGroup);
+
+            // Refresh sidebar/admin list
+            loadAdminGroups();
+
+        } else {
+
+            alert(result.message);
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Unable to add member.");
+
+    }
+
+}
+
+
+// =========================================
+// Add Member
+// =========================================
+
+async function addMemberToGroup() {
+
+    const userId =
+        document.getElementById("addMemberSelect").value;
+
+    if (userId === "") {
+
+        alert("Select an employee.");
+
+        return;
+
+    }
+
+    try {
+
+        const response =
+            await fetch("/groups/add-member", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    group_id: currentGroup,
+                    user_id: userId
+
+                })
+
+            });
+
+        const result = await response.json();
+
+        if (result.success) {
+
+            alert("✅ Member added successfully.");
+
+            viewGroup(currentGroup);
+
+            loadAdminGroups();
+
+        } else {
+
+            alert(result.message);
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Unable to add member.");
+
+    }
+
+}
+
+
+// =========================================
+// Show Create Group Modal
+// =========================================
+function showCreateGroupModal() {
+
+    openCreateGroupModal();
+
+}
+// =========================================
+// Open Create Group Modal
+// =========================================
+async function openCreateGroupModal() {
+
+    document.getElementById("newGroupName").value = "";
+    document.getElementById("newGroupDescription").value = "";
+
+    const response = await fetch("/users");
+    const users = await response.json();
+
+    let html = "";
+
+    users.forEach(user => {
+
+        html += `
+<label class="d-block mb-2">
+
+    <input
+        type="checkbox"
+        class="group-member"
+        value="${user.id}">
+
+    ${user.full_name}
+
+</label>
+`;
+
+    });
+
+    document.getElementById("groupMembersSelection").innerHTML = html;
+
+    document.getElementById("createGroupModal").style.display = "block";
+
+}
+
+
+// =========================================
+// Close Create Group Modal
+// =========================================
+function closeCreateGroupModal() {
+
+    document.getElementById("createGroupModal").style.display = "none";
+
+}
+
+// =========================================
+// Create Group
+// =========================================
+async function createGroup() {
+
+    const name = document.getElementById("newGroupName").value.trim();
+    const description = document.getElementById("newGroupDescription").value.trim();
+
+    if (name === "") {
+
+        alert("Please enter a group name.");
+
+        return;
+
+    }
+
+    const members = [];
+
+    document
+        .querySelectorAll(".group-member:checked")
+        .forEach(member => {
+
+            members.push(parseInt(member.value));
+
+        });
+
+    try {
+
+        const response = await fetch("/groups/create", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                name,
+                description,
+                members
+
+            })
+
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+
+            alert("✅ Group created successfully.");
+
+            closeCreateGroupModal();
+
+            loadGroups();
+
+            loadAdminGroups();
+
+        } else {
+
+            alert(result.message);
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Unable to create group.");
+
+    }
+
+}
+// =========================================
+// Rename Group
+// =========================================
+async function renameGroup(groupId) {
+
+    const newName = prompt("Enter the new group name:");
+
+    if (!newName) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch("/groups/" + groupId, {
+
+            method: "PUT",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                name: newName,
+                description: ""
+
+            })
+
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+
+            alert("✅ Group renamed successfully.");
+
+            loadGroups();
+
+            loadAdminGroups();
+
+        } else {
+
+            alert(result.message);
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Unable to rename group.");
+
+    }
+
+}
+// =========================================
+// Delete Group
+// =========================================
+async function deleteGroup(groupId) {
+
+    if (!confirm("Are you sure you want to delete this group?")) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch("/groups/" + groupId, {
+
+            method: "DELETE"
+
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+
+            alert("✅ Group deleted successfully.");
+
+            loadGroups();
+            loadAdminGroups();
+
+        } else {
+
+            alert(result.message);
+
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Unable to delete group.");
 
     }
 
