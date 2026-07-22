@@ -58,10 +58,20 @@ async function loadGroups() {
             groupList.innerHTML += `
 
 <li
-    class="list-group-item"
+    id="group-${group.id}"
+    class="list-group-item d-flex justify-content-between align-items-center"
     onclick="openGroup(${group.id}, '${group.name.replace(/'/g, "\\'")}', this)">
 
-    👥 ${group.name}
+    <span>👥 ${group.name}</span>
+
+    <span
+        id="groupBadge-${group.id}"
+        class="badge bg-danger"
+        style="display:none;">
+
+        0
+
+    </span>
 
 </li>
 
@@ -393,6 +403,8 @@ async function loadEmployees() {
 function selectEmployee(id, name, element){
 
     selectedEmployee = id;
+    currentGroup = null;
+    document.getElementById("manageGroupBtn").style.display = "none";
 
     selectedGroup = null;
 
@@ -639,9 +651,35 @@ socket.on("receive_group_message", (data) => {
 
     console.log("👥 Incoming Group Message:", data);
 
+    const badge = document.getElementById(`groupBadge-${data.group_id}`);
+
+    console.log("Badge Found:", badge);
+
     if (currentGroup == data.group_id) {
 
+        console.log("Current group is open");
+
         loadGroupMessages();
+
+    } else {
+
+        console.log("Incrementing badge...");
+
+        if (badge) {
+
+            let count = parseInt(badge.innerText) || 0;
+
+            console.log("Old Count:", count);
+
+            count++;
+
+            badge.innerText = count;
+
+            badge.style.display = "inline-block";
+
+            console.log("New Count:", badge.innerText);
+
+        }
 
     }
 

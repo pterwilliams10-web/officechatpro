@@ -8,6 +8,17 @@ async function openGroup(groupId, groupName, element){
 
     currentGroup = groupId;
     socket.emit("join_group", groupId);
+
+    // Clear unread badge
+const badge = document.getElementById(`groupBadge-${groupId}`);
+
+if (badge) {
+
+    badge.innerText = "0";
+
+    badge.style.display = "none";
+
+}
     document.getElementById("manageGroupBtn").style.display = "block";
 
     // Remove active class from all sidebar items
