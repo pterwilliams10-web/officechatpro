@@ -102,7 +102,9 @@ exports.getGroups = (req, res) => {
         SELECT
             g.id,
             g.name,
-            g.description
+            g.description,
+            g.avatar_path,
+            g.admin_only_post
         FROM groups g
 
         INNER JOIN group_members gm

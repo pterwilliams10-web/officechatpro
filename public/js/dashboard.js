@@ -318,7 +318,44 @@ async function logout(){
     window.location="/";
 
 }
+const themeToggle = document.getElementById("themeToggle");
+const themeLabel = document.getElementById("themeLabel");
 
+if (themeToggle && themeLabel) {
+
+    if (localStorage.getItem("theme") === "dark") {
+
+        document.body.classList.add("dark-mode");
+
+        themeToggle.checked = true;
+
+        themeLabel.innerText = "🌙 Dark Mode";
+
+    }
+
+    themeToggle.addEventListener("change", function () {
+
+        if (this.checked) {
+
+            document.body.classList.add("dark-mode");
+
+            localStorage.setItem("theme", "dark");
+
+            themeLabel.innerText = "🌙 Dark Mode";
+
+        } else {
+
+            document.body.classList.remove("dark-mode");
+
+            localStorage.setItem("theme", "light");
+
+            themeLabel.innerText = "🌞 Light Mode";
+
+        }
+
+    });
+
+}
 // =========================================
 // Load Employees
 // =========================================

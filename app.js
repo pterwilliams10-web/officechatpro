@@ -8,11 +8,9 @@ const helmet = require("helmet");
 const compression = require("compression");
 const path = require("path");
 const session = require("express-session");
-const db = require("./config/database");
-
+const { purgeExpiredMessages } = require("./utils/messageExpiry");
 
 const app = express();
-
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -21,9 +19,6 @@ const io = new Server(server, {
     }
 });
 
-// ===============================
-// Online Users
-// ===============================
 const onlineUsers = new Map();
 
 app.use(
@@ -41,7 +36,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 24 * 60 * 60 * 1000 // 1 day
+        maxAge: 24 * 60 * 60 * 1000
     }
 }));
 
@@ -50,7 +45,6 @@ app.use(
     "/uploads",
     express.static(path.join(__dirname, "public", "uploads"))
 );
-
 app.use(
     "/bootstrap",
     express.static(path.join(__dirname, "node_modules", "bootstrap", "dist"))
@@ -75,8 +69,10 @@ const uploadRoutes = require("./routes/uploadRoutes");
 const historyRoutes = require("./routes/history");
 const broadcastRoutes = require("./routes/broadcast");
 const groupRoutes = require("./routes/groups");
-const groupMessageRoutes =
-require("./routes/groupMessages");
+const groupMessageRoutes = require("./routes/groupMessages");
+const featureRoutes = require("./routes/features");
+const profileRoutes = require("./routes/profile");
+const groupFeatureRoutes = require("./routes/groupFeatures");
 
 app.use("/", authRoutes);
 app.use("/", userRoutes);
@@ -86,184 +82,110 @@ app.use("/", historyRoutes);
 app.use("/", broadcastRoutes);
 app.use("/", groupRoutes);
 app.use("/", groupMessageRoutes);
+app.use("/", featureRoutes);
+app.use("/", profileRoutes);
+app.use("/", groupFeatureRoutes);
 
 io.on("connection", (socket) => {
 
     console.log("✅ User Connected:", socket.id);
 
-    // attach user later
     socket.on("register", (user) => {
-
-    socket.user = user;
-
-    onlineUsers.set(user.id, socket.id);
-
-    console.log("🟢 Online:", user.full_name);
-
-    io.emit("online_users", Array.from(onlineUsers.keys()));
-
-});
+        socket.user = user;
+        onlineUsers.set(user.id, socket.id);
+        console.log("🟢 Online:", user.full_name);
+        io.emit("online_users", Array.from(onlineUsers.keys()));
+    });
 
     socket.on("disconnect", () => {
-
-    if (socket.user) {
-
-        onlineUsers.delete(socket.user.id);
-
-        console.log("🔴 Offline:", socket.user.full_name);
-
-        io.emit("online_users", Array.from(onlineUsers.keys()));
-
-    }
-
-});
-socket.on("send_message", (data) => {
-
-    console.log("📩 Private Message:", data);
-
-    // =========================================
-// Join Group
-// =========================================
-
-socket.on("join_group", (groupId) => {
-
-    socket.join("group_" + groupId);
-
-    console.log("👥 Joined Group:", groupId);
-
-});
-
-// =========================================
-// Group Message
-// =========================================
-
-socket.on("group_message", (data) => {
-
-    console.log("👥 Group Message:", data);
-
-    io.to("group_" + data.group_id)
-      .emit("receive_group_message", data);
-
-});
-
-    // Find the recipient's socket
-    const receiverSocketId = onlineUsers.get(data.receiver_id);
-
-    // Send only to the recipient if they're online
-    if (receiverSocketId) {
-        io.to(receiverSocketId).emit("receive_message", data);
-    }
-
-    // Also send back to the sender so both clients stay synchronized
-    socket.emit("receive_message", data);
-
-});
-
-// =========================================
-// Typing Indicator
-// =========================================
-
-socket.on("typing", (data) => {
-
-    const receiverSocketId = onlineUsers.get(data.receiver_id);
-
-    if (receiverSocketId) {
-
-        io.to(receiverSocketId).emit("user_typing", {
-
-            sender_id: data.sender_id,
-
-            sender_name: data.sender_name
-
-        });
-
-    }
-
-});
-
-// =========================================
-// Join Group
-// =========================================
-
-socket.on("join_group", (groupId) => {
-
-    socket.join("group_" + groupId);
-
-    console.log("👥 Joined Group:", groupId);
-
-});
-
-// =========================================
-// Real-Time Group Messages
-// =========================================
-
-socket.on("group_message", (data) => {
-
-    console.log("👥 Broadcasting Group Message:", data);
-
-    io.to("group_" + data.group_id)
-      .emit("receive_group_message", data);
-
-});
-
-socket.on("stop_typing", (data) => {
-
-    const receiverSocketId = onlineUsers.get(data.receiver_id);
-
-    if (receiverSocketId) {
-
-        io.to(receiverSocketId).emit("user_stop_typing", {
-
-            sender_id: data.sender_id
-
-            
-
-        });
-
-    }
-    // =========================================
-// Read Receipt
-// =========================================
-
-socket.on("message_read", (data) => {
-
-    const senderSocketId = onlineUsers.get(data.sender_id);
-
-    if (senderSocketId) {
-
-        io.to(senderSocketId).emit("message_read", {
-            reader_id: data.reader_id
-        });
-
-    }
-
-});
-
-    
-
-});
-   
-
-// Inside your io.on("connection", (socket) => { ... }) block:
-socket.on("broadcast_message", (data) => {
-    // Sends the payload to every single active client connected online
-    io.emit("receive_broadcast", {
-        sender_name: data.sender_name,
-        message: data.message,
-        created_at: data.created_at || new Date()
+        if (socket.user) {
+            onlineUsers.delete(socket.user.id);
+            console.log("🔴 Offline:", socket.user.full_name);
+            io.emit("online_users", Array.from(onlineUsers.keys()));
+        }
     });
+
+    socket.on("send_message", (data) => {
+        console.log("📩 Private Message:", data);
+
+        const receiverSocketId = onlineUsers.get(data.receiver_id);
+
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("receive_message", data);
+        }
+
+        socket.emit("receive_message", data);
+    });
+
+    socket.on("join_group", (groupId) => {
+        socket.join("group_" + groupId);
+        console.log("👥 Joined Group:", groupId);
+    });
+
+    socket.on("group_message", (data) => {
+        console.log("👥 Group Message:", data);
+        io.to("group_" + data.group_id).emit("receive_group_message", data);
+    });
+
+    socket.on("typing", (data) => {
+        const receiverSocketId = onlineUsers.get(data.receiver_id);
+
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("user_typing", {
+                sender_id: data.sender_id,
+                sender_name: data.sender_name
+            });
+        }
+    });
+
+    socket.on("stop_typing", (data) => {
+        const receiverSocketId = onlineUsers.get(data.receiver_id);
+
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("user_stop_typing", {
+                sender_id: data.sender_id
+            });
+        }
+    });
+
+    socket.on("message_read", (data) => {
+        const senderSocketId = onlineUsers.get(data.sender_id);
+
+        if (senderSocketId) {
+            io.to(senderSocketId).emit("message_read", {
+                reader_id: data.reader_id
+            });
+        }
+    });
+
+    socket.on("broadcast_message", (data) => {
+        io.emit("receive_broadcast", {
+            sender_name: data.sender_name,
+            message: data.message,
+            created_at: data.created_at || new Date()
+        });
+    });
+
 });
-});
+
+purgeExpiredMessages();
+setInterval(purgeExpiredMessages, 60 * 1000);
 
 const PORT = process.env.PORT || 3000;
 
-
 server.listen(PORT, () => {
-
     console.log("====================================");
     console.log(" OfficeChat Pro Server Running");
     console.log("====================================");
     console.log(`Open your browser at: http://localhost:${PORT}`);
+}).on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+        console.error(`\n❌ Port ${PORT} is already in use.`);
+        console.error("   Stop the old server first:");
+        console.error("   netstat -ano | findstr :" + PORT);
+        console.error("   Stop-Process -Id YOUR_PID -Force\n");
+        process.exit(1);
+    }
 
+    throw err;
 });
-

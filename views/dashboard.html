@@ -12,9 +12,7 @@
 rel="stylesheet"
 href="/bootstrap/css/bootstrap.min.css">
 
-<link
-rel="stylesheet"
-href="/css/dashboard.css">
+<link rel="stylesheet" href="/css/dashboard-v2.css">
 
 </head>
 
@@ -35,24 +33,23 @@ href="/css/dashboard.css">
 
         <nav class="nav-menu">
 
-            <button
-                id="navChats"
-                class="nav-item active">
+           <button
+    id="navChats"
+    class="nav-item active">
 
-                💬 Chats
+    💬 Chats
 
-            
+</button>
 
-            
-            <button
-                id="adminNavBtn"
-                class="nav-item"
-                style="display:none;"
-                onclick="toggleAdminPanel(true)">
+<button
+    id="adminNavBtn"
+    class="nav-item"
+    style="display:none;"
+    onclick="toggleAdminPanel(true)">
 
-                🛠 Admin Controls
+    🛠 Admin Controls
 
-                   </nav>
+</button>
 
         <div class="sidebar-footer">
 
@@ -69,6 +66,22 @@ href="/css/dashboard.css">
                 Logout
 
             </button>
+
+<div class="theme-switch mt-3">
+
+    <label class="switch">
+
+        <input
+            type="checkbox"
+            id="themeToggle">
+
+        <span class="slider"></span>
+
+    </label>
+
+    <span id="themeLabel">🌞 Light Mode</span>
+
+</div>
 
         </div>
 
@@ -225,13 +238,12 @@ href="/css/dashboard.css">
                 id="messageBox"
                 placeholder="Type a message...">
 
-            <button
-                id="sendBtn"
-                class="send-btn">
+            <<button
+    id="sendBtn">
 
-                Send
+    Send
 
-            </button>
+</button>
 
         </div>
 

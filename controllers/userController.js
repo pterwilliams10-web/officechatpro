@@ -40,7 +40,10 @@ exports.getUsers = (req, res) => {
             id,
             full_name,
             username,
-            role
+            role,
+            avatar_path,
+            status_message,
+            department
         FROM users
         WHERE id != ?
         ORDER BY full_name
@@ -122,7 +125,10 @@ exports.getAllUsers = (req, res) => {
             id,
             full_name,
             username,
-            role
+            role,
+            avatar_path,
+            status_message,
+            department
         FROM users
         ORDER BY full_name
     `).all();

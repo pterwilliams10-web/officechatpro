@@ -1,3 +1,64 @@
+/* =========================================
+   OfficeChat Theme Engine
+========================================= */
+
+:root{
+
+    --background:#f4f6fb;
+
+    --sidebar:#1f1f1f;
+
+    --panel:#ffffff;
+
+    --chat:#ffffff;
+
+    --card:#ffffff;
+
+    --text:#222222;
+
+    --text-light:#666666;
+
+    --border:#dddddd;
+
+    --primary:#2563eb;
+
+    --sent:#2ecc71;
+
+    --received:#4a90e2;
+
+}
+
+/* ================================
+   Dark Theme
+================================ */
+
+body.dark-mode{
+
+    --background:#151515;
+
+    --sidebar:#181818;
+
+    --panel:#202020;
+
+    --chat:#202020;
+
+    --card:#2a2a2a;
+
+    --text:#ffffff;
+
+    --text-light:#bbbbbb;
+
+    --border:#3a3a3a;
+
+    --primary:#3b82f6;
+
+    --sent:#28c76f;
+
+    --received:#4a90e2;
+
+}
+
+
 /* ===========================================================
    OfficeChat Pro Dashboard
    Sprint 1 - Base Layout
@@ -10,10 +71,13 @@
 }
 
 body{
-    font-family:'Poppins',sans-serif;
-    background:#edf2f7;
-    height:100vh;
-    overflow:hidden;
+
+    background:var(--background);
+
+    color:var(--text);
+
+    transition:.3s;
+
 }
 
 .app{
@@ -24,12 +88,11 @@ body{
 /* ================= Sidebar ================= */
 
 .sidebar{
-    width:260px;
-    background:#1e293b;
-    color:white;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
+
+    background:var(--sidebar);
+
+    color:var(--text);
+
 }
 
 .logo{
@@ -114,26 +177,26 @@ body{
 /* ================= Employee Panel ================= */
 
 .employee-panel{
-    width:320px;
-    background:white;
-    border-right:1px solid #e5e7eb;
 
-    display:flex;
-    flex-direction:column;
+    background:var(--panel);
+
+    color:var(--text);
+
 }
 
 .panel-header{
     padding:20px;
 }
 
-#searchInput{
-    width:100%;
-    padding:12px;
+#searchInput,
+#chatSearch{
 
-    border:1px solid #d1d5db;
-    border-radius:12px;
+    background:var(--panel);
 
-    font-size:15px;
+    color:var(--text);
+
+    border:1px solid var(--border);
+
 }
 
 .employee-list{
@@ -164,25 +227,21 @@ body{
 /* ================= Chat Area ================= */
 
 .chat-area{
-    flex:1;
 
-    display:flex;
-    flex-direction:column;
+    background:var(--chat);
 
-    background:#f8fafc;
+    color:var(--text);
+
 }
 
 .chat-header{
-    height:80px;
 
-    background:white;
+    background:var(--card);
 
-    border-bottom:1px solid #e5e7eb;
+    color:var(--text);
 
-    display:flex;
-    align-items:center;
+    border-bottom:1px solid var(--border);
 
-    padding:0 30px;
 }
 
 .chat-user{
@@ -216,20 +275,22 @@ body{
 }
 
 .welcome-screen{
-    text-align:center;
-    color:#64748b;
-    margin-top:100px;
+
+    color:var(--text-light);
+
+}
+.welcome-screen h2{
+
+    color:var(--text);
+
 }
 
 .chat-input-area{
-    background:white;
 
-    border-top:1px solid #e5e7eb;
+    background:var(--card);
 
-    padding:15px;
+    border-top:1px solid var(--border);
 
-    display:flex;
-    gap:10px;
 }
 
 .tool-btn{
@@ -246,15 +307,13 @@ body{
 }
 
 #messageBox{
-    flex:1;
 
-    padding:12px;
+    background:var(--panel);
 
-    border:1px solid #d1d5db;
+    color:var(--text);
 
-    border-radius:10px;
+    border:1px solid var(--border);
 
-    font-size:15px;
 }
 
 .send-btn{
@@ -364,26 +423,19 @@ body{
 
 .employee-card{
 
-    display:flex;
-    align-items:center;
+    background:var(--panel);
 
-    gap:12px;
+    color:var(--text);
 
-    padding:14px;
-
-    cursor:pointer;
+    border-bottom:1px solid var(--border);
 
     transition:.25s;
-
-    border-bottom:1px solid #ececec;
-
-    background:#fff;
 
 }
 
 .employee-card:hover{
 
-    background:#f5f8ff;
+    background:rgba(37,99,235,.10);
 
 }
 
@@ -711,5 +763,116 @@ body{
 .text{
 
     white-space:pre-wrap;
+
+}
+/* Theme Switch */
+
+.switch{
+    position:relative;
+    display:inline-block;
+    width:50px;
+    height:26px;
+}
+
+.switch input{
+    display:none;
+}
+
+.slider{
+    position:absolute;
+    cursor:pointer;
+    inset:0;
+    background:#ccc;
+    border-radius:30px;
+    transition:.3s;
+}
+
+.slider:before{
+    content:"";
+    position:absolute;
+    width:20px;
+    height:20px;
+    left:3px;
+    top:3px;
+    background:white;
+    border-radius:50%;
+    transition:.3s;
+}
+
+input:checked + .slider{
+    background:#0d6efd;
+}
+
+input:checked + .slider:before{
+    transform:translateX(24px);
+}
+body.dark-mode{
+
+    background:#151515;
+    color:white;
+
+}
+
+body.dark-mode .sidebar{
+
+    background:#1e1e1e;
+
+}
+
+body.dark-mode .employee-panel{
+
+    background:#202020;
+
+}
+
+body.dark-mode .chat-area{
+
+    background:#181818;
+
+}
+
+body.dark-mode input,
+body.dark-mode textarea{
+
+    background:#2d2d2d;
+    color:white;
+    border:1px solid #444;
+
+}
+
+body.dark-mode .list-group-item{
+
+    background:var(--panel);
+
+    color:var(--text);
+
+    border-bottom:1px solid var(--border);
+
+}
+
+body.dark-mode .chat-bubble.received{
+
+    background:var(--received);
+
+    color:white;
+
+}
+
+body.dark-mode .chat-bubble.sent{
+
+    background:var(--sent);
+
+    color:white;
+
+}
+.btn{
+
+    transition:.25s;
+
+}
+
+.btn:hover{
+
+    transform:translateY(-2px);
 
 }

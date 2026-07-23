@@ -13,5 +13,7 @@ router.get("/auth/me", authController.me);
 
 // Logout
 router.get("/auth/logout", authController.logout);
+router.post("/logout", authController.logout);
+router.post("/auth/logout", authController.logout);
 
 module.exports = router;

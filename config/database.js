@@ -277,5 +277,8 @@ CREATE TABLE IF NOT EXISTS chat_group_members (
 `).run();
 
 
-// EXPORT DATABASE
+// ============================
+// RUN MIGRATIONS
+// ============================
+
 module.exports = db;

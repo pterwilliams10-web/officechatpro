@@ -13,9 +13,14 @@ const uploadFolder = path.join(
     "uploads"
 );
 
-if (!fs.existsSync(uploadFolder)) {
-    fs.mkdirSync(uploadFolder, { recursive: true });
-}
+const avatarFolder = path.join(uploadFolder, "avatars");
+const groupAvatarFolder = path.join(uploadFolder, "group-avatars");
+
+[uploadFolder, avatarFolder, groupAvatarFolder].forEach(folder => {
+    if (!fs.existsSync(folder)) {
+        fs.mkdirSync(folder, { recursive: true });
+    }
+});
 
 const storage = multer.diskStorage({
 
